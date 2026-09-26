@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "deutero",
+  "owner": {
+    "name": "Deutero",
+    "url": "https://deutero.ai"
+  },
+  "metadata": {
+    "description": "Skills and MCP access for Deutero, an AI-conducted qualitative research platform.",
+    "version": "1.4.0"
+  },
+  "plugins": [
+    {
+      "name": "deutero",
+      "source": "./deutero-interview-research",
+      "description": "Design, run and analyse AI-conducted qualitative research on Deutero: user research from analytics and product context, customer development from a business idea, persona simulations, branching interview flows, participant rewards wired to completion webhooks, and agent self-improvement interviews.",
+      "version": "1.4.0",
+      "author": {
+        "name": "Deutero",
+        "url": "https://deutero.ai"
+      },
+      "homepage": "https://dashboard.deutero.ai/help",
+      "repository": "https://github.com/deutero-ai/agent-skill",
+      "license": "Apache-2.0",
+      "category": "research",
+      "keywords": [
+        "research",
+        "user-research",
+        "customer-development",
+        "interviews",
+        "qualitative",
+        "surveys",
+        "personas",
+        "simulation",
+        "webhooks",
+        "incentives",
+        "deutero"
+      ]
+    }
+  ]
+}
