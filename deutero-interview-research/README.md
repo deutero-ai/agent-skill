@@ -14,11 +14,15 @@ The server is declared with no credentials:
 
 Authorization is the client's job. Clients that support remote MCP authorization sign in by OAuth on the first tool call; anything else uses an API key in an `X-API-Key` header, configured client-side. The `deutero-setup` skill walks through both, and through creating an account when there is not one yet.
 
+## From code
+
+MCP is for an agent in a session. Code that runs on its own — a webhook receiver, a reconciliation job, a script that builds studies — uses the same API through the [`deutero` Python SDK](https://github.com/deutero-ai/deutero-python) (`pip install "deutero>=0.2"`) or plain REST. `deutero-setup/references/python-sdk.md` maps every MCP tool to its SDK method.
+
 ## Skills
 
 | Skill | For |
 |---|---|
-| `deutero-setup` | Account creation, OAuth or API key, connection and plan checks. Start here when tools are missing or returning 401/403. |
+| `deutero-setup` | Account creation, OAuth or API key, connection and plan checks, and the Python SDK. Start here when tools are missing or returning 401/403. |
 | `deutero-study-authoring` | The mechanics: project, study details, question types, guidance, welcome, screening, recruitment, results. The hub the others build on. |
 | `deutero-product-research` | Studies driven by analytics and product context — a funnel drop, a churn cohort, a dead feature. Platform-agnostic; covers in-product embedding and recruitment copy. |
 | `deutero-customer-development` | Discovery studies from a business idea, deck or plan. Assumption extraction, questions about the past, finding a population you have no list of. |

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.0
+
+Covers the `deutero` Python SDK (0.2.0), the supported way for a server or script to do what the MCP tools do.
+
+- New `deutero-setup/references/python-sdk.md`: install (and that 0.1.x targeted a removed API, so code using `studies.generate`, `analysis.run` or `credits.estimate_*` needs porting, not debugging), `DEUTERO_API_KEY`, the async client, a full MCP tool → SDK method table with the renames called out (`run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, …), `None`-means-unsent semantics, paging, the exception table, and `deutero.webhooks` for verifying deliveries.
+- Documented that `PermissionDeniedError` (403, a plan gate) subclasses `AuthenticationError` (401), so catching the latter first misreports a plan limit as a bad key.
+- `deutero-participant-rewards`: the worked receiver verifies with `deutero.webhooks.unwrap` and branches on the typed `InterviewCompletedEvent`; the reconciliation sweep uses `client.interviews.list` and now pages through `total` — the previous single `limit=500` request stopped paying at the 501st completion. `webhook-events.md` §3 leads with the SDK and keeps `standardwebhooks` and the stdlib verifier as alternatives.
+- `deutero-setup` sends code that runs without an agent to the SDK or REST, and `mcp-clients.md` shows the SDK call beside the curl one.
+- `deutero-study-authoring` notes that a study can be built from a script with the same decisions, the model tier still the user's.
+- Fixed: `deutero-setup` still listed webhook endpoint management as dashboard-only; it has been available over MCP since 1.3.0.
+
 ## 1.4.0
 
 Corrections and additions from implementing `deutero-participant-rewards` against a real codebase.

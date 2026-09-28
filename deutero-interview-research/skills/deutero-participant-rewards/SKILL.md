@@ -1,6 +1,6 @@
 ---
 name: deutero-participant-rewards
-description: Wire a Deutero study to the user's own systems so that finishing an interview does something — issue a reward, credit an account, mark a panel task complete, unlock a feature, notify a CRM. Covers tagging each participant with the researcher's own ID (`?participant_id=` on the link, or the embed metadata bag), handing that ID back on the completion redirect, subscribing to the `interview.completed` webhook with `create_webhook`, verifying the signature, paying out exactly once, and reconciling anything missed. Use this whenever someone wants to pay, reward, thank, credit or unlock something for people who complete a study, asks how to know who finished in their own terms, wants a webhook, callback or notification when an interview ends, mentions `interview.completed`, `external_participant_id`, incentives, gift cards, vouchers, panel callbacks or study payouts, or asks how to join Deutero interviews back to their own users.
+description: Wire a Deutero study to the user's own systems so that finishing an interview does something — issue a reward, credit an account, mark a panel task complete, unlock a feature, notify a CRM. Covers tagging each participant with the researcher's own ID (`?participant_id=` on the link, or the embed metadata bag), handing that ID back on the completion redirect, subscribing to the `interview.completed` webhook with `create_webhook`, verifying the signature, paying out exactly once, and reconciling anything missed. Use this whenever someone wants to pay, reward, thank, credit or unlock something for people who complete a study, asks how to know who finished in their own terms, wants a webhook, callback or notification when an interview ends, is writing a Deutero webhook receiver or reconciliation job with the Python SDK, mentions `interview.completed`, `external_participant_id`, incentives, gift cards, vouchers, panel callbacks or study payouts, or asks how to join Deutero interviews back to their own users.
 ---
 
 # Implementing participant rewards
@@ -98,7 +98,7 @@ Endpoints are per **organization**, not per study — one endpoint hears about e
 5. **Deduplicate on `webhook-id`** before issuing anything, and treat "this tag already got paid for this study" as a second guard.
 6. **Return 2xx inside 10 seconds.** If the payout is a local write (a ledger row, a credit grant, an entitlement flag), do it inline — introducing a queue to satisfy a rule buys a new failure mode, a lost job, in exchange for nothing. Queue it when the payout calls somebody else's API (vouchers, gift cards, a CRM), which is the part that is actually slow and flaky.
 
-`references/reward-handler.md` is a complete worked receiver with the idempotency table, plus the Node equivalent.
+`references/reward-handler.md` is a complete worked receiver with the idempotency table. In Python, verify with the SDK's `deutero.webhooks.unwrap` — it checks the signature and hands back a typed `InterviewCompletedEvent`.
 
 ## Step 5: reconcile, because there are no retries
 
@@ -114,7 +114,7 @@ list_webhook_deliveries        {"webhook_id": "…", "success": false}
 
 Both listing calls exclude persona runs by default, so a sweep does not pay simulations unless you ask it to — but the parameter differs by surface (`list_interviews` takes `simulated`, everything else takes `include_simulated`), so check which one you are passing rather than assuming.
 
-**MCP is an agent-time surface, and reconciliation usually has to run on your server.** The same tools are plain REST — `reward-handler.md` §6 has the authenticated call a backend makes, with the header and the env var it belongs in.
+**MCP is an agent-time surface, and reconciliation usually has to run on your server.** The same tools are plain REST, wrapped in Python by the `deutero` SDK (`client.interviews.list`, `client.interviews.find_by_external_id`, `client.webhooks.list_deliveries`) — `reward-handler.md` §6 has the sweep, paged, with the env var the key belongs in.
 
 ## Things that quietly cost money
 

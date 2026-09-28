@@ -42,7 +42,7 @@ npx openskills install deutero-ai/agent-skill
 
 | Skill | Use it for |
 |---|---|
-| [`deutero-setup`](deutero-interview-research/skills/deutero-setup/SKILL.md) | Signing up, connecting the MCP server by OAuth or API key, and checking credits and plan limits. **Start here** if tools are missing or return 401/403. |
+| [`deutero-setup`](deutero-interview-research/skills/deutero-setup/SKILL.md) | Signing up, connecting the MCP server by OAuth or API key, checking credits and plan limits, and the Python SDK for code that runs without an agent. **Start here** if tools are missing or return 401/403. |
 | [`deutero-study-authoring`](deutero-interview-research/skills/deutero-study-authoring/SKILL.md) | The hub: projects, study details, question types, welcome and consent, screening, recruitment links, the embed widget, reading results. |
 | [`deutero-product-research`](deutero-interview-research/skills/deutero-product-research/SKILL.md) | User research driven by product analytics: funnel drops, churn, feature adoption, support spikes. Works with any analytics platform. |
 | [`deutero-customer-development`](deutero-interview-research/skills/deutero-customer-development/SKILL.md) | Customer discovery and idea validation from a business idea, deck or plan: assumption mapping, problem interviews, willingness to pay, recruiting strangers. |

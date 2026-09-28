@@ -92,32 +92,33 @@ A signed bag carrying **no** `participant_id` is a legitimate use too: logged-ou
 ```python
 import os
 from flask import Flask, request, abort, jsonify
-from standardwebhooks import Webhook, WebhookVerificationError
+from deutero import webhooks
+from deutero.webhooks import InterviewCompletedEvent
 
 app = Flask(__name__)
-wh = Webhook(os.environ["DEUTERO_WEBHOOK_SECRET"])
+SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]
 STUDY_ID = os.environ["REWARDED_STUDY_ID"]
 
 @app.post("/hooks/deutero")
 def deutero_hook():
     try:
         # raw bytes: a re-serialised body will not match the signature
-        event = wh.verify(request.get_data(), dict(request.headers))
-    except WebhookVerificationError:
+        event = webhooks.unwrap(request.get_data(), request.headers, secret=SECRET)
+    except webhooks.WebhookVerificationError:
         abort(400)
 
-    if event.get("type") != "interview.completed":
+    if not isinstance(event, InterviewCompletedEvent):
         return jsonify(ok=True)                       # not ours; ack and move on
 
-    data = event.get("data") or {}
-    if not data.get("completed") or data.get("survey_id") != STUDY_ID:
+    data = event.data
+    if not data.completed or data.survey_id != STUDY_ID:
         return jsonify(ok=True)
 
-    tag = data.get("external_participant_id")
+    tag = data.external_participant_id
     if not tag:
         # someone reached the study without a tagged link — real, and not a
         # reason to guess at who they were
-        app.logger.info("completion with no participant tag: %s", data.get("interview_id"))
+        app.logger.info("completion with no participant tag: %s", data.interview_id)
         return jsonify(ok=True)
 
     user = users.find_by_participant_tag(tag)
@@ -125,9 +126,11 @@ def deutero_hook():
         app.logger.warning("unknown participant tag %s", tag)
         return jsonify(ok=True)
 
-    claim_reward(user, data, msg_id=request.headers["webhook-id"])
+    claim_reward(user, data.model_dump(), msg_id=event.webhook_id)
     return jsonify(ok=True)                           # fast; the work is queued
 ```
+
+`deutero.webhooks` is the verifier in the `deutero` SDK (`deutero-setup/references/python-sdk.md` §5): no API key, no network call, and the seven organization events come back typed. The generic `standardwebhooks` package verifies the same deliveries if you would rather not take the SDK — `wh.verify(...)` returns a plain dict, and `webhook-events.md` §3 has that version and a stdlib one.
 
 Every branch that decides not to pay still returns 2xx. A non-2xx tells Deutero the delivery failed, and since there are no retries it buys nothing but a misleading entry in `list_webhook_deliveries`.
 
@@ -158,14 +161,14 @@ Rows left `pending` or `failed` are the ones to alert on. They are also the answ
 
 Deutero attempts each delivery once, so a sweep — nightly while a study is open, and on demand when someone says they were not paid — is the only thing standing between a missed delivery and an unpaid participant.
 
-**Your server cannot call MCP.** MCP tools are an agent-time surface; a nightly job or a request handler needs the REST API the same tools are generated from. It is the same routes under `https://dashboard.deutero.ai/study-api/api/v1/`, authenticated with an API key in the `X-API-Key` header (`DEUTERO_API_KEY` in your secret manager — created in the dashboard, see `deutero-setup`). The MCP tool name is the route *function's* name, not its path, so the paths are worth having written down:
+**Your server cannot call MCP.** MCP tools are an agent-time surface; a nightly job or a request handler needs the REST API the same tools are generated from — in Python, through the `deutero` SDK, which wraps it. It is the same routes under `https://dashboard.deutero.ai/study-api/api/v1/`, authenticated with an API key in the `X-API-Key` header (`DEUTERO_API_KEY` in your secret manager — created in the dashboard, see `deutero-setup`). The MCP tool name is the route *function's* name, not its path, so the paths are worth having written down:
 
-| Tool | Route |
-|---|---|
-| `list_interviews` | `GET /studies/{study_id}/interviews` |
-| `find_interviews_by_external_id` | `GET /studies/{study_id}/interviews/by-external-id?external_participant_id=…` |
-| `get_interview` | `GET /interviews/{interview_id}` |
-| `list_webhook_deliveries` | `GET /webhooks/{webhook_id}/deliveries` |
+| Tool | Route | SDK |
+|---|---|---|
+| `list_interviews` | `GET /studies/{study_id}/interviews` | `client.interviews.list` |
+| `find_interviews_by_external_id` | `GET /studies/{study_id}/interviews/by-external-id?external_participant_id=…` | `client.interviews.find_by_external_id` |
+| `get_interview` | `GET /interviews/{interview_id}` | `client.interviews.get` |
+| `list_webhook_deliveries` | `GET /webhooks/{webhook_id}/deliveries` | `client.webhooks.list_deliveries` |
 
 ```bash
 curl -sS -H "X-API-Key: $DEUTERO_API_KEY" \
@@ -173,23 +176,24 @@ curl -sS -H "X-API-Key: $DEUTERO_API_KEY" \
 ```
 
 ```python
-import os, requests
+from deutero import Deutero
 
-API = "https://dashboard.deutero.ai/study-api/api/v1"
-SESSION = requests.Session()
-SESSION.headers["X-API-Key"] = os.environ["DEUTERO_API_KEY"]
+client = Deutero()   # DEUTERO_API_KEY from the environment
 
-def completed_interviews(study_id: str, tag: str | None = None) -> list[dict]:
-    params = {"completed": True, "limit": 500}
-    if tag:
-        params["external_participant_id"] = tag
-    # `simulated` defaults to false — real interviews only. Persona runs are
-    # the one thing a sweep could pay that the webhook never would, so leave
-    # this default alone rather than passing `simulated=null` for "both".
-    r = SESSION.get(f"{API}/studies/{study_id}/interviews", params=params, timeout=15)
-    r.raise_for_status()
-    return r.json()["interviews"]
+def completed_interviews(study_id: str):
+    offset = 0
+    while True:
+        # `simulated` is omitted, so the server returns real interviews only.
+        # Persona runs are the one thing a sweep could pay that the webhook
+        # never would — leave that default alone.
+        page = client.interviews.list(study_id, completed=True, limit=200, offset=offset)
+        yield from page.interviews
+        offset += len(page.interviews)
+        if not page.interviews or offset >= page.total:
+            return
 ```
+
+The listing is paged (`total`, `limit`, `offset`; 50 per page by default, 500 at most), so a sweep that reads one page silently stops paying once completions outnumber the page. Without the SDK it is the same call over `requests` with `X-API-Key` set on the session and `r.json()["interviews"]`.
 
 Note the parameter is spelled differently across surfaces: `list_interviews` takes `simulated` (`false` by default — real only), while `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` take `include_simulated` (`false` by default). Both defaults are safe, and an unrecognised query parameter is ignored rather than rejected — so the wrong spelling leaves the default in place instead of widening the sweep. The only way to pay a persona is to ask for one explicitly.
 
@@ -197,17 +201,17 @@ Note the parameter is spelled differently across surfaces: `list_interviews` tak
 def reconcile(study_id: str) -> None:
     # everyone who completed, in Deutero's view
     for row in completed_interviews(study_id):
-        tag = row.get("external_participant_id")
+        tag = row.external_participant_id
         if not tag:
             continue
         user = users.find_by_participant_tag(tag)
         if user and not grants.exists(user.id, study_id):
-            claim_reward(user, {"survey_id": study_id, "interview_id": row["id"],
+            claim_reward(user, {"survey_id": study_id, "interview_id": str(row.id),
                                 "completed": True},
-                         msg_id=f"reconcile:{row['id']}")
+                         msg_id=f"reconcile:{row.id}")
 ```
 
-For one person rather than the whole study, use `find_interviews_by_external_id {"study_id": "…", "external_participant_id": "<tag>"}` from an agent, or the `by-external-id` route above from your server. It returns **every attempt** that tag made, newest first, with `completed` on each — so "they say they finished" is settled in one call. Someone who abandoned and started again has several rows and is still owed one reward; the `(user_id, study_id)` constraint is what makes that true without extra logic.
+For one person rather than the whole study, use `find_interviews_by_external_id {"study_id": "…", "external_participant_id": "<tag>"}` from an agent, or `client.interviews.find_by_external_id(study_id, external_participant_id=tag)` from your server. It returns **every attempt** that tag made, newest first, with `completed` on each — so "they say they finished" is settled in one call. Someone who abandoned and started again has several rows and is still owed one reward; the `(user_id, study_id)` constraint is what makes that true without extra logic.
 
 `list_webhook_deliveries {"webhook_id": "…", "success": false}` tells you whether the gap was a delivery Deutero attempted and your server refused, or an event that never fired at all.
 

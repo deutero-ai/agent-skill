@@ -1,6 +1,6 @@
 ---
 name: deutero-study-authoring
-description: Build a Deutero study end to end over MCP — project, study details, interview questions of the right type, welcome and consent, screening, recruitment, and reading the results back. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite interview questions, set up screening or a participation link, or asks what question type to use; and use it as the mechanical reference underneath the more specific Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which all decide *what* to ask and then hand the building to this one. Reach for it too whenever someone asks how to turn a research goal, a survey draft or a list of topics into an AI-conducted interview.
+description: Build a Deutero study end to end over MCP (or from Python with the `deutero` SDK) — project, study details, interview questions of the right type, welcome and consent, screening, recruitment, and reading the results back. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite interview questions, set up screening or a participation link, or asks what question type to use; and use it as the mechanical reference underneath the more specific Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which all decide *what* to ask and then hand the building to this one. Reach for it too whenever someone asks how to turn a research goal, a survey draft or a list of topics into an AI-conducted interview.
 ---
 
 # Authoring a Deutero study
@@ -109,6 +109,10 @@ For structured questions, `get_scale_responses` and `get_options_responses` summ
 ## A caution worth keeping
 
 These are stated preferences and remembered behaviour, captured at one moment. The gap between what people say and what they do is real, and it does not close because the participant is technical or the questions are good. Where a transcript disagrees with the behavioural evidence you already have, say so rather than deferring to the transcript.
+
+## Building from code instead
+
+Everything above is the same over the `deutero` Python SDK — one method per tool (`client.studies.create`, `client.questions.create`, `client.recruitment.update`, …) — for when the study has to be built by a script, a CI job or the user's own product rather than by you in this session. The design decisions do not change; the model tier is still asked for, never hard-coded. `deutero-setup/references/python-sdk.md` has the method map and the conventions that differ from MCP.
 
 ## References
 

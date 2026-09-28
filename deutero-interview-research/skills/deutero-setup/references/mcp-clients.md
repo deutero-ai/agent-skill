@@ -8,7 +8,7 @@ https://dashboard.deutero.ai/mcp
 
 `https://agents.deutero.ai/mcp` serves the same server. Use **https** — an `http://` URL will not connect. The path is exactly `/mcp` with nothing after it; a 404 on `/mcp/mcp` means a client appended its own path.
 
-The same API is plain REST at `https://dashboard.deutero.ai/study-api/api/v1/`, documented at `/study-api/api/v1/docs`. Every MCP tool is exactly one REST route with the same parameters — the tool name is the route *function's* name, though, not its URL path (`find_interviews_by_external_id` is `GET /studies/{study_id}/interviews/by-external-id`), so read the paths off `/docs` rather than deriving them from tool names. This is the surface a **server** uses: MCP tools are available to an agent in a session, not to the user's own backend, so anything that has to run in a request handler or a nightly job goes through REST with an API key.
+The same API is plain REST at `https://dashboard.deutero.ai/study-api/api/v1/`, documented at `/study-api/api/v1/docs`. Every MCP tool is exactly one REST route with the same parameters — the tool name is the route *function's* name, though, not its URL path (`find_interviews_by_external_id` is `GET /studies/{study_id}/interviews/by-external-id`), so read the paths off `/docs` rather than deriving them from tool names. This is the surface a **server** uses: MCP tools are available to an agent in a session, not to the user's own backend, so anything that has to run in a request handler or a nightly job goes through REST with an API key — in Python, through the `deutero` SDK (`python-sdk.md`), which wraps every route and names each method after its resource rather than the tool.
 
 ## OAuth
 
@@ -67,6 +67,11 @@ Keep the key in an environment variable rather than inline in a file that might 
 ```bash
 curl -H "X-API-Key: $DEUTERO_API_KEY" \
   https://dashboard.deutero.ai/study-api/api/v1/projects
+```
+
+```python
+from deutero import Deutero
+print(Deutero().projects.list())   # DEUTERO_API_KEY from the environment
 ```
 
 The key also works as `Authorization: Bearer <key>` and, on the legacy API, as an `api_key` query parameter — prefer the header.

@@ -1,6 +1,6 @@
 ---
 name: deutero-setup
-description: Connect to Deutero — create an account when there is none, authorize the MCP server by OAuth or API key, and confirm the connection and credit balance before any study work begins. Use this whenever Deutero tools are missing, return 401 or 403, or the user says they are new to Deutero, asks how to sign up, asks for an API key, asks to connect or configure the Deutero MCP server in Claude Code, Claude Desktop, Cursor or Windsurf, or an agent needs its own Deutero account created from a programmable inbox. Also use it first whenever any other Deutero task fails on authentication or plan limits, since almost every such failure is a setup problem rather than a study problem.
+description: Connect to Deutero — create an account when there is none, authorize the MCP server by OAuth or API key, and confirm the connection and credit balance before any study work begins. Use this whenever Deutero tools are missing, return 401 or 403, or the user says they are new to Deutero, asks how to sign up, asks for an API key, asks to connect or configure the Deutero MCP server in Claude Code, Claude Desktop, Cursor or Windsurf, wants to call Deutero from their own code or backend with the `deutero` Python SDK, or an agent needs its own Deutero account created from a programmable inbox. Also use it first whenever any other Deutero task fails on authentication or plan limits, since almost every such failure is a setup problem rather than a study problem.
 ---
 
 # Connecting to Deutero
@@ -60,6 +60,8 @@ If the client installed this plugin, that server is already configured and the f
 
 **An API key** suits IDEs, scripts and CI, where there is no browser to hand. Keys are organization-scoped, shown once, and set as the `X-API-Key` header. `references/mcp-clients.md` has the exact configuration block for each client and how to generate, label, disable and rotate keys.
 
+**Code that runs without you** — a webhook receiver, a scheduled job, a script that builds studies from a file — cannot use MCP at all. In Python it uses the `deutero` SDK (`pip install "deutero>=0.2"`, `Deutero()` reads `DEUTERO_API_KEY`), which has one method per MCP tool; in any other language, the REST routes in `references/mcp-clients.md`. `references/python-sdk.md` maps every tool to its method and lists the differences that bite.
+
 Restart the client after any configuration change — tools that "do not appear" are almost always a client that has not reloaded.
 
 ## Step 4: Confirm before you build
@@ -73,9 +75,9 @@ These exist only in the dashboard, so plan around them rather than hunting for a
 - AI generation of study details, questions and welcome text (you write those yourself — which is usually better anyway)
 - Thematic analysis and its reports
 - Prolific recruitment, Slack and Discord connectors
-- Webhook endpoint management, billing, Chat with Data
+- Billing, Chat with Data
 
-Clustering, transcript search, and scale/options response summaries **are** available over MCP; see `deutero-study-authoring`.
+Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK); see `deutero-study-authoring` and `deutero-participant-rewards`.
 
 ## Keeping credentials safe
 
@@ -85,4 +87,5 @@ Store a key as `DEUTERO_API_KEY` with owner-only permissions, never in a committ
 
 - `references/account-signup.md` — browser-driven account creation for an agent, verified end to end, with the failure modes
 - `references/mcp-clients.md` — per-client configuration, API key lifecycle, REST equivalents, and the troubleshooting table
+- `references/python-sdk.md` — the `deutero` Python SDK: install, MCP tool → method map, errors, webhook verification, and the 0.1 → 0.2 break
 - `references/plan-limits.md` — what each plan includes, how to detect the plan, and the fallback for every gated feature
