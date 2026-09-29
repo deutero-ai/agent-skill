@@ -72,12 +72,11 @@ Re-run `health_health_get` and `list_projects`, and report in one line: connecte
 
 These exist only in the dashboard, so plan around them rather than hunting for a tool:
 
-- AI generation of study details, questions and welcome text (you write those yourself — which is usually better anyway)
 - Thematic analysis and its reports
 - Prolific recruitment, Slack and Discord connectors
 - Billing, Chat with Data
 
-Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK); see `deutero-study-authoring` and `deutero-participant-rewards`.
+Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
 
 ## Keeping credentials safe
 

@@ -1,6 +1,6 @@
 ---
 name: deutero-study-authoring
-description: Build a Deutero study end to end over MCP (or from Python with the `deutero` SDK) — project, study details, interview questions of the right type, welcome and consent, screening, recruitment, and reading the results back. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite interview questions, set up screening or a participation link, or asks what question type to use; and use it as the mechanical reference underneath the more specific Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which all decide *what* to ask and then hand the building to this one. Reach for it too whenever someone asks how to turn a research goal, a survey draft or a list of topics into an AI-conducted interview.
+description: Build a Deutero study end to end over MCP (or from Python with the `deutero` SDK) — project, study details (written or AI-drafted from a brief or a landing page), interview questions of the right type (written or AI-generated), welcome and consent, screening, recruitment, and reading the results back. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite interview questions, set up screening or a participation link, or asks what question type to use; and use it as the mechanical reference underneath the more specific Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which all decide *what* to ask and then hand the building to this one. Reach for it too whenever someone asks how to turn a research goal, a survey draft or a list of topics into an AI-conducted interview.
 ---
 
 # Authoring a Deutero study
@@ -42,6 +42,8 @@ Pick `survey_type` deliberately — it steers the interviewer's manner: `user_ex
 
 Write them as you would for a real study, and be specific enough that a stranger could tell who is in scope and who is not. `references/study-fields.md` has the field-by-field guidance, the model tier and cost table, quota and modality settings, and worked good/bad examples.
 
+**Or have them drafted.** `draft_study` turns a short brief into a name, description, research questions, objectives and target population — the dashboard's Create Study wizard. `draft_study_from_site` does the same from a product landing page, aimed at what a founder most needs to learn. Neither stores anything: read the draft, fix what is generic, then pass its fields to `create_study`. A draft is worth having when the user arrives with a sentence rather than a brief; it is not a substitute for the specifics only the user has — the real numbers, the decision waiting on the answer, the exact population — so ask for those and edit them in. Both take twenty to forty seconds, so say you are drafting rather than going quiet. `references/study-fields.md` has the brief fields for each `survey_type`.
+
 **Never pick `model_tier` on the user's behalf — always ask.** It is the largest cost lever in the platform (a 10× spread) and the largest quality lever, so it is the user's call every time, including when they have told you to go ahead and build the whole study. Ask before or at creation, present the three tiers with their rates and your recommendation, and wait for an answer rather than creating on a default and offering to change it later.
 
 `open_weights` (1 credit / 5 questions) is fine for most user and market research and is the only tier on Hobby; `standard` (3×) and `premium` (10×) probe more deftly. On a study where probing quality *is* the product — a handful of expert interviews, a self-interview, anything nuanced — premium is usually cheap relative to the participant's time, and that is worth saying as a recommendation. Check `get_credit_balance` and the plan first so you only offer tiers the user can actually run.
@@ -76,11 +78,15 @@ Questions get better when they are anchored. A question about a category of expe
 
 Bound the probing with `min_turns` and `max_turns`. Three to four turns suits an anchored question; beyond that the interviewer starts inventing angles.
 
+**A generated first draft.** `generate_questions` writes 3–20 questions from the study details (plus any `additional_instructions`) and appends them to the list, extending rather than repeating what is already there. It is the dashboard's Generate with AI, and it is only as good as the details it reads, so set those first. Treat the result as a draft to hold against Steps 3 and 4: check each type choice, rewrite generic guidance into real probe targets, anchor questions to events, split anything compound, then `update_question` / `delete_question` / `reorder_questions`. Use `additional_instructions` to carry what the details do not — the occasion to anchor to, types you want, vocabulary to avoid. It takes thirty seconds to two minutes. Image-upload questions are proposed only when the study's tier can read images, and are dropped on plans that cannot (`skipped_image_questions`). When a topic skill has already chosen the questions, write those by hand instead — the generator does not know what you decided.
+
 Run `validate_questions` when the set is written. It checks clarity, leading or biased wording, and ethics — the same review the dashboard's Validate button runs. Fix what it flags before recruiting, not after.
 
 ## Step 5: Welcome and consent
 
 `set_welcome`. Say who is running the study, what it involves, roughly how long it takes, and what happens to the answers. Set `consent: true` whenever the answers will be stored, analysed or used to change something — and say so plainly rather than burying it.
+
+`generate_welcome` drafts that text — the dashboard's Welcome → Generate — and saves nothing. It writes it to be read aloud, introduces the interviewer as an AI working for the researcher, and scales the consent language to `survey_type` (`consent_level`: IRB-style for `sociology`, standard for `polling`, short for `user_experience` and `customer_development`). Run it **after** the questions exist, because the length it quotes comes from the question count (about three minutes each; 15 minutes when there are none). It reads `benefits`, `risks` and `support_contact` from the study, and the researcher's name and position from the profile of the account you are connected as, so set the study fields first. Whatever is missing comes back as a bracketed placeholder such as `[Insert researcher name]`, listed in `placeholders`: fill every one in, or ask the user for it, before `set_welcome` — participants hear the text verbatim. Then read the draft against the paragraph above; the generator does not know about a reward, a recording or how the answers will be used unless the study fields say so.
 
 ## Step 6: Screening, only if you are recruiting strangers
 
@@ -112,7 +118,7 @@ These are stated preferences and remembered behaviour, captured at one moment. T
 
 ## Building from code instead
 
-Everything above is the same over the `deutero` Python SDK — one method per tool (`client.studies.create`, `client.questions.create`, `client.recruitment.update`, …) — for when the study has to be built by a script, a CI job or the user's own product rather than by you in this session. The design decisions do not change; the model tier is still asked for, never hard-coded. `deutero-setup/references/python-sdk.md` has the method map and the conventions that differ from MCP.
+Everything above is the same over the `deutero` Python SDK — one method per tool (`client.studies.create`, `client.questions.create`, `client.recruitment.update`, …), except the four generators, which are REST calls until the SDK catches up — for when the study has to be built by a script, a CI job or the user's own product rather than by you in this session. The design decisions do not change; the model tier is still asked for, never hard-coded. `deutero-setup/references/python-sdk.md` has the method map and the conventions that differ from MCP.
 
 ## References
 

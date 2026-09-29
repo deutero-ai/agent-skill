@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.0
+
+Study details, interview questions and the welcome text can now be AI-generated over MCP, the same generators the dashboard uses. Nothing in the "not covered over MCP" list is about generation any more.
+
+- New tools: `draft_study` (a study draft from a research brief — the Create Study wizard), `draft_study_from_site` (from a product landing page — Suggest from Site; 5 drafts per site per user) and `generate_questions` (3–20 questions appended to the study's list — Generate with AI) and `generate_welcome` (welcome and consent text — Welcome → Generate). Drafts store nothing; their fields go to `create_study`, and a welcome draft to `set_welcome`.
+- `deutero-study-authoring` Step 5 covers `generate_welcome`: run it after the questions exist (it quotes a length from the count), set `benefits` / `risks` / `support_contact` first, fill every entry in `placeholders` before saving, and how `consent_level` follows `survey_type`. `deutero-participant-rewards` says to put the reward in `benefits` before generating.
+- `deutero-study-authoring` covers when a draft helps and what it cannot supply, and treats generated questions as a first draft to hold against the type and guidance rules. `study-fields.md` has the brief fields per `survey_type`; `question-types.md` has `generate_questions` and what to check in its output.
+- `deutero-customer-development` and `deutero-product-research` say where the generators fit their methods and where they do not.
+- `deutero-setup`: the tools are in the inventory, and generation of study details, questions and welcome text is off the "not available over MCP" list. `python-sdk.md` gives the REST routes, since SDK 0.2 has no methods for them.
+- Fixed: `mcp-clients.md`'s tool inventory was missing the webhook tools, `find_interviews_by_external_id` and `get_flow_signals`. It now lists all 82 tools, checked against the API's own spec.
+
 ## 1.5.0
 
 Covers the `deutero` Python SDK (0.2.0), the supported way for a server or script to do what the MCP tools do.

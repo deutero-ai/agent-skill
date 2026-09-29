@@ -1,6 +1,6 @@
 # Question types
 
-`create_question` appends to the study's list. `reorder_questions` takes every question id in the desired order; `update_question` does partial updates; `delete_question` renumbers the rest and removes recorded answers to it.
+`create_question` appends to the study's list; `generate_questions` appends a generated set (see `generate_questions` below). `reorder_questions` takes every question id in the desired order; `update_question` does partial updates; `delete_question` renumbers the rest and removes recorded answers to it.
 
 The type is inferred from which config fields you send (`scale` → scale, `options` → choices, `slots` → slots, `expected_image` → image_upload, otherwise text), but **pass `qtype` explicitly** so intent is on the record and a later edit cannot silently change the type.
 
@@ -96,6 +96,24 @@ Private, never read aloud. It is where the interviewer gets its brief.
 - **Probe targets.** What a complete answer contains. Name the thing: "if they mention cost, get the number they compared against".
 - **Vocabulary constraints.** List internal shorthand the interviewer must not say aloud and give the plain replacement. The constraint is on idiom and unstated referents, not on technical depth — assume the participant knows their own domain and do not explain their job to them.
 - **Terseness handling.** Where a short answer is likely: which aspect to press on, what a sufficient answer looks like, and when to accept and move on. For example: "A bare yes or no leaves the condition unstated. Ask once what would have to be true for the opposite answer. If they decline again, take the position as given and continue."
+
+## generate_questions
+
+```
+generate_questions {"study_id": "…", "n_questions": 8,
+                    "additional_instructions": "Anchor to their last rota change. Include one ranking question on what they would give up."}
+```
+
+Writes `n_questions` (3–20, default 10) from the study's `research_question`, `objectives`, `methodology` and `target_population`, in the study's language, and **appends them** — if questions exist, it extends the set rather than repeating it, and nothing is replaced. Returns only the questions it added, with ids and `question_number`, plus `skipped_image_questions`. Thirty seconds to two minutes, depending on `n_questions`.
+
+What comes back, and what to check:
+
+- **A mix of types** chosen for the study, all of the eight above. Hold each against the rule of thumb in the skill: generators lean on `text` for things you could have enumerated.
+- **`explanation` on open questions** — usually "probe for detail" level. Rewrite it into the probe targets, vocabulary constraints and terseness handling above.
+- **Turn ranges.** Open-text and image questions get `min_turns` from the generator (default 2) and `max_turns` of at least 4; structured types get a range only when `follow_up` is true.
+- **`image_upload`** is proposed only when the study's `model_tier` can read images, and dropped on plans that cannot (counted in `skipped_image_questions`, never saved).
+
+A 502 means the model's answer could not be used; nothing was saved, so call again. Run `validate_questions` on the result before recruiting, same as a hand-written set.
 
 ## validate_questions
 

@@ -46,6 +46,8 @@ Hand the built set to `deutero-study-authoring` for the mechanics — question t
 
 Set `survey_type: "user_experience"`, and put the real numbers into `research_question` and `objectives`: the interviewer reads them and probes better for knowing what is at stake.
 
+`draft_study_from_site` drafts a user research study from the product's landing page. It knows what the page claims, not what your data shows, so it is a starting point for the description at most — the numbers and the occasion still have to come from Steps 1 and 2. Likewise `generate_questions` will not anchor to your event unless told: if you use it, say the occasion and the known reasons list in `additional_instructions`, then hold the result against `references/question-patterns.md`.
+
 ## Step 4: Recruit the people the data points at
 
 This is where an analytics-driven study either works or quietly fails. The segment is defined by behaviour, which means you can reach them precisely — and a generic panel would be worthless here.

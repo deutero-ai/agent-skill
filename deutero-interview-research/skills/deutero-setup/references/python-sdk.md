@@ -40,7 +40,7 @@ Use either as a context manager (or call `close()`) so the connection pool is re
 
 ## 2. MCP tool → SDK method
 
-Every MCP tool is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
+Every MCP tool — except the four generators listed after the table — is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
 
 | MCP tool | SDK |
 |---|---|
@@ -64,6 +64,17 @@ Every MCP tool is one SDK method with the same parameters, spelled as Python key
 | `run_clustering` / `get_optimal_clusters` / `get_latest_clustering` | `client.analysis.cluster(id, question_id=, n_clusters=)` / `.get_optimal_clusters(id, question_id=)` / `.get_latest_clustering(id)` |
 | `list_webhook_event_types` / `list_webhooks` / `create_webhook` / `update_webhook` / `delete_webhook` / `rotate_webhook_secret` / `list_webhook_deliveries` | `client.webhooks.list_event_types()` / `.list()` / `.create(label=, url=, events=)` / `.update(wid, …)` / `.delete(wid)` / `.rotate_secret(wid)` / `.list_deliveries(wid, event_type=, success=, …)` |
 | `get_credit_balance` / `health_health_get` | `client.credits.get_balance()` / `client.health()` |
+
+**Not in 0.2 yet: the generators.** `draft_study`, `draft_study_from_site`, `generate_questions` and `generate_welcome` were added to the API after SDK 0.2 shipped, so they have no method. From code, call the REST routes directly with the same `X-API-Key`, under `https://dashboard.deutero.ai/study-api/api/v1`:
+
+| MCP tool | REST |
+|---|---|
+| `draft_study` | `POST /study-drafts` |
+| `draft_study_from_site` | `POST /study-drafts/from-site` |
+| `generate_questions` | `POST /studies/{study_id}/questions/generate` |
+| `generate_welcome` | `POST /studies/{study_id}/welcome/generate` |
+
+These are not 0.1's removed `studies.generate`. A study draft and a welcome draft store nothing — pass the fields to `client.studies.create`, or the text to `client.welcome.set`, yourself; `generate_questions` saves what it writes. Allow for the latency — twenty seconds to two minutes — in your HTTP timeout.
 
 The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, `search_transcripts` → `transcripts.search`, `list_analyzable_questions` → `analysis.list_questions`, `describe_graph_nodes` → `graph.describe_node_types`.
 

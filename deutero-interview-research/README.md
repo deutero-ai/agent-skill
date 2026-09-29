@@ -16,7 +16,7 @@ Authorization is the client's job. Clients that support remote MCP authorization
 
 ## From code
 
-MCP is for an agent in a session. Code that runs on its own — a webhook receiver, a reconciliation job, a script that builds studies — uses the same API through the [`deutero` Python SDK](https://github.com/deutero-ai/deutero-python) (`pip install "deutero>=0.2"`) or plain REST. `deutero-setup/references/python-sdk.md` maps every MCP tool to its SDK method.
+MCP is for an agent in a session. Code that runs on its own — a webhook receiver, a reconciliation job, a script that builds studies — uses the same API through the [`deutero` Python SDK](https://github.com/deutero-ai/deutero-python) (`pip install "deutero>=0.2"`) or plain REST. `deutero-setup/references/python-sdk.md` maps every MCP tool to its SDK method, or to its REST route for the generators newer than SDK 0.2.
 
 ## Skills
 
@@ -35,6 +35,8 @@ MCP is for an agent in a session. Code that runs on its own — a webhook receiv
 
 ## Not covered over MCP
 
-AI generation of study details, questions and welcome text; thematic analysis; Prolific recruitment; Slack and Discord connectors; billing; Chat with Data. All dashboard-only. The skills say so where it matters rather than sending you looking for a tool.
+Thematic analysis; Prolific recruitment; Slack and Discord connectors; billing; Chat with Data. All dashboard-only. The skills say so where it matters rather than sending you looking for a tool.
 
 Webhook endpoints *are* manageable over MCP (`create_webhook` and friends), and were not before 1.3.0 — the dashboard's Settings → Webhooks page and the API manage the same endpoints.
+
+Study details and interview questions *can* be AI-generated over MCP since 1.6.0: `draft_study` (from a brief, the Create Study wizard), `draft_study_from_site` (from a landing page) and `generate_questions` (the Study Questions page's Generate with AI) — and so can the welcome and consent text, with `generate_welcome`.

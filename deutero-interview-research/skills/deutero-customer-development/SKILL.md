@@ -51,6 +51,8 @@ Notice that "will they pay $X" sits below all of these. Pricing research on an u
 
 Build the set with `deutero-study-authoring` — types, config, guidance, `validate_questions`. Ask the user which `model_tier` to run on before creating the study, and hand them the `dashboard_url` from `create_study` as soon as it exists. Set `survey_type: "customer_development"`, and write `research_question` and `objectives` as the assumptions under test, in those words. The interviewer reads them, and an interviewer that knows it is testing "whether they have already paid to solve this" probes for it.
 
+`draft_study` takes a `customer_development` brief — `problem_hypothesis`, `customer_segment`, `solution_concept`, `key_assumptions`, `success_criteria` — which maps straight onto the intake above, and will draft the study details from it. Useful when the user hands you a deck and wants something to react to; rewrite its `research_question` and `objectives` into your ranked assumptions before `create_study`. Do not use `generate_questions` for the discovery set: it writes a plausible general interview, not one built on questions about the past and the two assumptions you ranked. `references/discovery-questions.md` is the set.
+
 ## Step 4: Find and qualify the population
 
 This is the part people underestimate, because unlike product research you have no user list — you are recruiting strangers who may not exist in the shape you imagine. `references/population-and-recruiting.md` covers it properly: turning a market description into a findable population, choosing between panels, communities, professional networks and personal introductions, and what each one does to your sample.

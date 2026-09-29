@@ -13,6 +13,33 @@ get_study      {"study_id": "…"}
 
 `create_study` returns `dashboard_url` — `https://dashboard.deutero.ai/survey-details?survey_id=<study id>`. Hand it to the user straight away; they cannot review anything you built without it.
 
+## Drafting the details
+
+```
+draft_study            {"survey_type": "customer_development", "language": "English",
+                        "problem_hypothesis": "…", "customer_segment": "…"}
+draft_study_from_site  {"url": "https://example.com", "language": "English"}
+```
+
+Both return fields named as `create_study` takes them (`name`, `description`, `research_question`, `objectives`, `target_population`, plus `survey_type` and `language`) and **store nothing** — nothing exists until you call `create_study` with a `project_id`. Each is a model call of twenty to forty seconds.
+
+`draft_study` reads only the brief fields of the `survey_type` you pick; the required ones are refused with 400 before any model call if missing:
+
+| survey_type | Required | Optional |
+|---|---|---|
+| `sociology` | `research_question`, `population_of_interest` | `context_or_setting`, `key_concepts`, `scope_and_boundaries` |
+| `customer_development` | `problem_hypothesis`, `customer_segment` | `solution_concept`, `key_assumptions`, `success_criteria` |
+| `user_experience` | `business_context`, `research_need` | `target_users`, `research_type` (`exploratory` / `evaluative` / `generative`), `constraints` |
+| `polling` | `research_question` | `population_segment`, `geographic_scope`, `survey_context` (`exploratory` / `validation` / `tracking` / `comparative`), `data_quality_requirements` |
+
+`language` is both the language the draft is written in and the study's interview language — one of English, Spanish, French, German, Italian, Portuguese, Russian, Japanese, Korean, Chinese.
+
+`draft_study_from_site` always drafts a `user_experience` study. When the page is an error or login page, or says too little about the product, it returns `is_valid: false`, `draft: null` and a `rationale` naming what was missing — try the product's main page rather than a sub-page. Drafts are limited to **5 per site per user** (`generations_used` / `generations_limit`; `http` vs `https` and a trailing slash are the same site), then 429. A page that could not be fetched does not count.
+
+A draft is generic where the brief was. Before `create_study`, put in what only the user knows: the real numbers, the decision the study informs, inclusion criteria a stranger could apply. The model tier is still asked for, never taken from a draft.
+
+## Reading a study
+
 `get_study` is the one to call when you want to know where a study stands: configuration plus per-stage status (welcome set? screening enabled and how many questions? how many main questions?) plus the participation links. Call it before editing something you did not create in this session.
 
 ## survey_type

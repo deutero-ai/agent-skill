@@ -127,7 +127,7 @@ Both listing calls exclude persona runs by default, so a sweep does not pay simu
 
 ## Tell the participant what they are getting
 
-The reward belongs in the welcome text: what it is, what earns it (completing, not starting), and when it arrives. A study that pays on completion without saying so gets abandoned interviews from people who did not know there was a reason to finish, and complaints from people who assumed there was.
+The reward belongs in the welcome text: what it is, what earns it (completing, not starting), and when it arrives. If you draft that text with `generate_welcome`, put the reward in the study's `benefits` first — it is the only field the generator reads it from — and check the draft says all three. A study that pays on completion without saying so gets abandoned interviews from people who did not know there was a reason to finish, and complaints from people who assumed there was.
 
 ## References
 

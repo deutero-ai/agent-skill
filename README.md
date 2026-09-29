@@ -84,7 +84,7 @@ Point the client at [`deutero-interview-research/`](deutero-interview-research).
 
 ### Connect the Deutero MCP server
 
-Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has about 69 tools, and every tool is also a REST route.
+Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 82 tools, and every tool is also a REST route.
 
 **OAuth** is preferred wherever the client supports remote MCP authorization:
 
@@ -124,9 +124,9 @@ No account yet? Sign up at [dashboard.deutero.ai/login](https://dashboard.deuter
 
 | Area | Tools |
 |---|---|
-| Projects & studies | `create_project`, `create_study`, `update_study`, `get_study`, `list_studies` |
-| Questions | `create_question`, `update_question`, `reorder_questions`, `validate_questions` |
-| Screening & consent | `set_screening_settings`, `create_screening_question`, `set_welcome`, `upsert_welcome_translation` |
+| Projects & studies | `create_project`, `draft_study`, `draft_study_from_site`, `create_study`, `update_study`, `get_study`, `list_studies` |
+| Questions | `generate_questions`, `create_question`, `update_question`, `reorder_questions`, `validate_questions` |
+| Screening & consent | `set_screening_settings`, `create_screening_question`, `generate_welcome`, `set_welcome`, `upsert_welcome_translation` |
 | Recruitment & embedding | `get_recruitment`, `update_recruitment`, `create_embed_key`, `get_embed_snippet` |
 | Interview Flow (branching) | `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `activate_graph` |
 | Personas & simulation | `create_persona`, `generate_personas`, `run_simulation`, `get_simulation` |
@@ -153,7 +153,7 @@ Any of them. The skill works from PostHog, Amplitude, Mixpanel, Google Analytics
 Some features are plan-gated. Simulations need Solo or above, and branching Interview Flow needs Pro or above. The skills detect your plan and offer a fallback instead of failing. The details are in [`plan-limits.md`](deutero-interview-research/skills/deutero-setup/references/plan-limits.md).
 
 **What isn't available to agents?**
-AI generation of study text, thematic analysis in the dashboard, Prolific recruitment, the Slack and Discord connectors, billing, and Chat with Data are dashboard-only. The skills say so where it matters.
+Thematic analysis in the dashboard, Prolific recruitment, the Slack and Discord connectors, billing, and Chat with Data are dashboard-only. The skills say so where it matters.
 
 **Can my backend use this without an agent?**
 Yes. Every MCP tool is a REST route at `https://dashboard.deutero.ai/study-api/api/v1/`, authenticated with `X-API-Key`.
