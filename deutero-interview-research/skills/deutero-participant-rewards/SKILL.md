@@ -61,6 +61,8 @@ set_screening_settings   {"study_id": "…", "enabled": true,
                           "redirect_url": "https://you.example/screened-out?pid={{external_participant_id}}"}
 ```
 
+Set the screen-out redirect before the study is published. Screening is locked while the study is open (409 `study_locked`), though the completion `redirect_url` isn't.
+
 `{{external_participant_id}}` is the only placeholder either URL understands; it expands to the ID the interview arrived with, or to nothing when it arrived bare. Set the screening one too if you screen people out — a panel has to be told who bounced as well as who finished, and a screen-out never produces a completion webhook.
 
 Use the landing page to *acknowledge* ("thanks — your voucher is on its way"), and let the webhook do the paying. If the page issues the reward, refreshing it issues another.
@@ -112,7 +114,7 @@ list_webhook_deliveries        {"webhook_id": "…", "success": false}
 
 `find_interviews_by_external_id` returns **every attempt** that tag made, newest first — starting over after abandoning is ordinary, so pay on the first completed one and not once per row. `list_webhook_deliveries` separates "we tried and your server refused it" from "nothing ever fired", which are different bugs: the first is yours, the second usually means the endpoint is disabled or not subscribed to that event.
 
-Both listing calls exclude persona runs by default, so a sweep does not pay simulations unless you ask it to — but the parameter differs by surface (`list_interviews` takes `simulated`, everything else takes `include_simulated`), so check which one you are passing rather than assuming.
+Both listing calls exclude persona runs and test runs (the researcher's own Try Interview / Preview interviews) by default, so a sweep pays neither unless you ask it to. The parameters differ by surface: `list_interviews` takes `simulated` and `test_runs`, everything else takes `include_simulated` and `include_test_runs`. Check which one you are passing rather than assuming. The webhooks carry `test_run` too, and a handler skips `true`.
 
 **MCP is an agent-time surface, and reconciliation usually has to run on your server.** The same tools are plain REST, wrapped in Python by the `deutero` SDK (`client.interviews.list`, `client.interviews.find_by_external_id`, `client.webhooks.list_deliveries`) — `reward-handler.md` §6 has the sweep, paged, with the env var the key belongs in.
 

@@ -40,7 +40,7 @@ Use either as a context manager (or call `close()`) so the connection pool is re
 
 ## 2. MCP tool → SDK method
 
-Every MCP tool — except the four generators listed after the table — is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
+Every MCP tool — except the four generators and the four publication tools listed after the table — is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
 
 | MCP tool | SDK |
 |---|---|
@@ -76,6 +76,25 @@ Every MCP tool — except the four generators listed after the table — is one 
 
 These are not 0.1's removed `studies.generate`. A study draft and a welcome draft store nothing — pass the fields to `client.studies.create`, or the text to `client.welcome.set`, yourself; `generate_questions` saves what it writes. Allow for the latency — twenty seconds to two minutes — in your HTTP timeout.
 
+**Not in 0.2 yet: publication.** Publishing, pausing and validating a study also came after 0.2. Same base URL and key:
+
+| MCP tool | REST |
+|---|---|
+| `get_publication_status` | `GET /studies/{study_id}/publication` |
+| `validate_study` | `POST /studies/{study_id}/validate` |
+| `publish_study` | `POST /studies/{study_id}/publish` (JSON body required, `{}` at minimum; optional `acknowledge_validation_run_id`, `acknowledge_credit_shortfall`) |
+| `pause_study` | `POST /studies/{study_id}/pause` |
+
+**Not in 0.2 yet: image uploads.** Images for `present_images` questions and flow steps, base64 in a JSON body (`{"image_base64": "…", "label": "…"}`):
+
+| MCP tool | REST |
+|---|---|
+| `upload_question_image` | `POST /studies/{study_id}/questions/{question_id}/images` (optional `position`) |
+| `delete_question_image` | `DELETE /studies/{study_id}/questions/{question_id}/images/{image_id}` |
+| `upload_flow_image` | `POST /studies/{study_id}/graph/images` (returns the `url` for a step's `images`) |
+
+A refusal comes back as a non-2xx whose JSON `detail.code` names the reason (`deutero-study-authoring/references/publishing.md`). In the SDK's error types, that's a `ConflictError` for `study_locked` on any locked write. A script that publishes should branch on the code, not on the status: 402 covers both `plan_limit_reached` and credits, and 409 covers both `credit_shortfall` and `validation_issues`. SDK 0.2's study models predate `status`, so if your version doesn't expose it, read it from `GET /studies/{study_id}` directly. Validation can take a minute, so size the timeout for it.
+
 The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, `search_transcripts` → `transcripts.search`, `list_analyzable_questions` → `analysis.list_questions`, `describe_graph_nodes` → `graph.describe_node_types`.
 
 ## 3. Conventions that differ from MCP
@@ -99,7 +118,7 @@ Every non-2xx raises; nothing returns an error body for you to inspect.
 | 402 | `InsufficientCreditsError` | out of credits |
 | 403 | `PermissionDeniedError` | the plan does not include the feature (`plan-limits.md`) |
 | 404 | `NotFoundError` | wrong ID, or another organization's |
-| 409 | `ConflictError` | stale `expected_graph_version` — re-read `graph.get` and retry |
+| 409 | `ConflictError` | stale `expected_graph_version` — re-read `graph.get` and retry; or `study_locked` — the study is open, pause it before editing |
 | 429 | `RateLimitError` | back off |
 | 5xx | `InternalServerError` / `BadGatewayError` | server side |
 
@@ -149,6 +168,7 @@ if isinstance(event, InterviewCompletedEvent) and event.data.completed:
 - **Using 0.1.x.** See §1. If a call like `client.studies.generate`, `client.studies.set_model_tier`, `client.analysis.run` or `client.credits.estimate_*` appears in code you are asked to fix, it was written for the old API; port it rather than debugging it.
 - **Catching `AuthenticationError` before `PermissionDeniedError`.** See §4.
 - **`simulated` vs `include_simulated`.** `interviews.list` takes `simulated`; `interviews.find_by_external_id` and `transcripts.list` / `.search` take `include_simulated`. Both default to real interviews only. Leave that default alone in anything that pays people.
+- **Test runs** (the researcher's own Try Interview / Preview interviews) are left out by the server unless asked for, so SDK 0.2 calls already return participants only. The switches (`test_runs` on `GET /studies/{id}/interviews`, `include_test_runs` on the by-external-id, transcripts and search routes) and the `test_run` field on every row are newer than 0.2. To ask for test runs, or to read `test_run`, call REST.
 - **`survey_id` is the study ID** in webhook payloads and some responses, under its older name.
 - **Secrets shown once.** `webhooks.create`, `webhooks.rotate_secret` and `embed.create_key` return a signing secret exactly once. Write it to the secret manager in the same code path that created it.
 - **Putting the key in code.** `Deutero()` with `DEUTERO_API_KEY` in the environment is the whole point of the fallback; a key in a committed script is a leaked key.

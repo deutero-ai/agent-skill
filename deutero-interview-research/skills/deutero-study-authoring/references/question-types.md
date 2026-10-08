@@ -4,7 +4,7 @@
 
 The type is inferred from which config fields you send (`scale` → scale, `options` → choices, `slots` → slots, `expected_image` → image_upload, otherwise text), but **pass `qtype` explicitly** so intent is on the record and a later edit cannot silently change the type.
 
-Valid values: `text`, `scale`, `choices`, `slots`, `image_upload`, `multi_select`, `ranking`, `card_sort`.
+Valid values: `text`, `scale`, `choices`, `slots`, `image_upload`, `present_images`, `multi_select`, `ranking`, `card_sort`.
 
 Shared fields on every type: `explanation` (private probing guidance), `follow_up` (default true), `min_turns`, `max_turns`.
 
@@ -80,11 +80,21 @@ Several named values elicited inside one natural conversation. Cleaner than spli
 
 ## image_upload
 
-Asks the participant for a picture. `expected_image` describes what you want. **Needs a vision-capable interview model** (standard or premium), which in practice means **a paid plan** — on Hobby the only tier is open-weights, which is text-only, and the question is rejected with 403. Check the plan before designing a study around it. The fallback is a `text` question whose guidance names the details the picture would have shown.
+Asks the participant for a picture. `expected_image` describes what you want. **Needs a paid plan** (Solo and up) — every model tier reads images, but on Hobby image questions are rejected with 403. Check the plan before designing a study around it. The fallback is a `text` question whose guidance names the details the picture would have shown.
 
 ```json
 {"qtype": "image_upload", "expected_image": "A photo of the setup as it looks right now, mess included"}
 ```
+
+## present_images
+
+Shows the participant images you supply (concepts, logos, packaging, screenshots) and asks about them. Create the question first, then attach each image with `upload_question_image` — one call per image, the file base64-encoded in `image_base64` (bare, or a `data:image/png;base64,…` URL; JPEG, PNG or WebP up to 10 MB). Give each a `label`: it is the caption participants and the interviewer use to refer to it. Images go after the existing ones unless you pass `position`; `delete_question_image` removes one (ids are under `images` on the question). Keep it to one to four images. Like `image_upload`, it **needs a paid plan**: on Hobby it is rejected with 403. In a simulation the persona sees the images.
+
+```json
+{"qtype": "present_images", "question": "Which of these logos feels most trustworthy, and why?"}
+```
+
+In an Interview Flow, upload with `upload_flow_image` instead and put the returned `url` in the step's config: `"images": [{"url": "…", "label": "Concept A"}]`.
 
 ---
 
@@ -111,7 +121,7 @@ What comes back, and what to check:
 - **A mix of types** chosen for the study, all of the eight above. Hold each against the rule of thumb in the skill: generators lean on `text` for things you could have enumerated.
 - **`explanation` on open questions** — usually "probe for detail" level. Rewrite it into the probe targets, vocabulary constraints and terseness handling above.
 - **Turn ranges.** Open-text and image questions get `min_turns` from the generator (default 2) and `max_turns` of at least 4; structured types get a range only when `follow_up` is true.
-- **`image_upload`** is proposed only when the study's `model_tier` can read images, and dropped on plans that cannot (counted in `skipped_image_questions`, never saved).
+- **`image_upload`** is proposed only on plans with image questions (Solo and up), and dropped on Hobby (counted in `skipped_image_questions`, never saved).
 
 A 502 means the model's answer could not be used; nothing was saved, so call again. Run `validate_questions` on the result before recruiting, same as a hand-written set.
 

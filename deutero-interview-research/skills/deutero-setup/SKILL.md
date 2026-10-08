@@ -17,7 +17,7 @@ Call `health_health_get`, then `list_projects`. What comes back tells you where 
 - **No Deutero tools exist at all** — the MCP server is not configured. Go to Step 3.
 - **401** — the client is configured but the credential is wrong, disabled or deleted. Regenerate or re-authorize (Step 3).
 - **403 with "Upgrade required"** — connected fine, but the plan does not cover the feature. Not a setup problem; report the plan the message names and continue with what the plan allows.
-- **402** — connected, out of credits. Report the balance and stop before starting anything that spends.
+- **402** — connected, out of credits. Report the balance and stop before starting anything that spends. (On `publish_study`, a 402 can also be `plan_limit_reached`, the open-study limit. Read `detail.code`.)
 
 ## Establish the plan before you design anything
 
@@ -25,7 +25,7 @@ Two separate limits decide what a user can do: the **credit balance** (how much 
 
 `get_credit_balance` does not name the plan, but `base_limit` gives it away: **15 = Hobby, 100 = Solo, 400 = Pro, 1500 = Team**. Anything else means a custom package — ask. Asking the user outright is also fine and often faster.
 
-It matters most for Hobby, which is where every new account lands: **text chat interviews only, on the open-weights model, 15 credits a month, no simulations, no Interview Flow, no image questions, one open study at a time.** That rules out most of what the other Deutero skills would otherwise reach for, and finding it out after authoring forty questions wastes the user's time.
+It matters most for Hobby, which is where every new account lands: **text chat interviews only, on the open-weights model, 15 credits a month, no simulations, no Interview Flow, no image questions, one open (published) study at a time.** That rules out most of what the other Deutero skills would otherwise reach for, and finding it out after authoring forty questions wastes the user's time.
 
 `references/plan-limits.md` has the full matrix, how to detect the plan, and what to do instead at each gate. Read it before promising a user a feature.
 
@@ -76,7 +76,7 @@ These exist only in the dashboard, so plan around them rather than hunting for a
 - Prolific recruitment, Slack and Discord connectors
 - Billing, Chat with Data
 
-Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
+Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`), and publishing and pausing a study (`publish_study`, `pause_study`, `validate_study`, `get_publication_status`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
 
 ## Keeping credentials safe
 

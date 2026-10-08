@@ -39,8 +39,10 @@ Endpoints belong to the **organization**, not to a study, so one endpoint hears 
 
 | Event | Fires when | `data` |
 |---|---|---|
-| `interview.completed` | A participant finished an interview | `interview_id`, `survey_id`, `completed`, `participant_id`, `external_participant_id`, `web_source` |
-| `interview.started` | An interview began, before anything is answered | `interview_id`, `survey_id`, `participant_id`, `external_participant_id`, `web_source` |
+| `interview.completed` | A participant finished an interview | `interview_id`, `survey_id`, `completed`, `participant_id`, `external_participant_id`, `web_source`, `test_run` |
+| `interview.started` | An interview began, before anything is answered | `interview_id`, `survey_id`, `participant_id`, `external_participant_id`, `web_source`, `test_run` |
+
+`test_run: true` marks the researcher's own test through the dashboard's **Try Interview** / **Preview** dialog. It is not a participant, so a reward handler skips it: nobody is owed anything. It is also the event to watch while wiring the handler up, since a test run delivers the same payload as a real completion.
 | `analysis.completed` | Thematic analysis finished for an interview | `interview_id`, `survey_id` |
 | `simulation.completed` | A persona simulation run finished | `interview_id`, `survey_id` |
 | `study.created` | A study was created | `study_id`, `survey_id`, `name`, `project_id`, `created_via` |

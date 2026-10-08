@@ -53,7 +53,9 @@ update_recruitment {"study_id": "…", "short_url_slug": "mealkit-churn",
                     "max_responses": 50, "redirect_url": "https://example.com/thanks"}
 ```
 
-`get_recruitment` returns the participation links, quota status and whether screening and characteristics gates are on. `update_recruitment` changes only the fields you pass; `clear_max_responses: true` removes a quota.
+`get_recruitment` returns the participation links, quota status and whether screening and characteristics gates are on. `update_recruitment` changes only the fields you pass; `clear_max_responses: true` removes a quota. It stays usable while the study is open.
+
+**The links admit people only while the study is open.** Set everything up on a draft, then `publish_study` before sharing (`publishing.md`). A link shared early turns people away with "not accepting responses". The links themselves never change when the study is published, paused or resumed, so it's safe to put them in an email or embed ahead of time.
 
 - Text: `https://app.deutero.ai/chat?s=<slug>` — slugs are unique across all of Deutero, so a taken one is refused.
 - Direct form, useful for testing: `https://app.deutero.ai/chat?survey_id=<study id>`.

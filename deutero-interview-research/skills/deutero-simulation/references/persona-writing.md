@@ -43,6 +43,13 @@ Do not write five variations of the ideal participant. Write the set that stress
 
 **Testing length and cost** — the rambler and the terse one bracket the range; the real interviews land between them.
 
+**Testing a `present_images` question** — the persona sees the images, so write personas that stress how the question handles them:
+- *The literal reader.* Comments on surface details (a colour, a typo, a cropped edge) instead of the concept. Finds guidance that does not steer the interviewer back to what the images are meant to test.
+- *The one who cannot tell them apart.* Says two of the images look the same to them. Finds labels and stimuli that are too similar for anyone to compare.
+- *The refuser.* Likes none of them and says why. Finds a question that assumes one option must win.
+
+Do not read their preferences as a ranking of the images. Which concept a persona picks is not evidence of which one people will pick.
+
 ## generate_personas
 
 ```

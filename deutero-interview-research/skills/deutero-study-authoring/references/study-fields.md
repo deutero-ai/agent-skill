@@ -40,7 +40,7 @@ A draft is generic where the brief was. Before `create_study`, put in what only 
 
 ## Reading a study
 
-`get_study` is the one to call when you want to know where a study stands: configuration plus per-stage status (welcome set? screening enabled and how many questions? how many main questions?) plus the participation links. Call it before editing something you did not create in this session.
+`get_study` is the one to call when you want to know where a study stands: configuration plus per-stage status (welcome set? screening enabled and how many questions? how many main questions?) plus the participation links, plus `status` (`draft`, `open`, `paused`, `closed`). Call it before editing something you did not create in this session. An `open` study's interview configuration is locked (`publishing.md`).
 
 ## survey_type
 
@@ -85,7 +85,7 @@ Credits are Deutero's unit of compute. Rates are per five interview questions.
 
 `frontier` is a deprecated alias for `premium`.
 
-Open weights is text-only: it cannot read image uploads, so `image_upload` questions are rejected on plans limited to that tier. Scale and multiple-choice questions with no follow-up are not counted toward the block size.
+Every tier reads images; image questions (`present_images`, `image_upload`) are gated by plan instead, and rejected on Hobby. Scale and multiple-choice questions with no follow-up are not counted toward the block size.
 
 Multipliers: **simulated interviews cost 2×** the live rate and are unavailable on Hobby. **Thematic analysis with deliverables costs 2×**, charged per interview analysed at the study's per-five-question rate.
 
@@ -99,7 +99,7 @@ Call `get_credit_balance` before committing to a plan of work, and say the numbe
 
 Set with `update_study` (or on the Details page):
 
-- **max_responses** — the quota that closes the study. `update_recruitment` can also set it; `clear_max_responses: true` removes it.
+- **max_responses** — the quota. When completed interviews reach it, the study's status becomes `closed` and it stops holding an open-study slot. Raise it and `publish_study` again to collect more. `update_recruitment` can also set it; `clear_max_responses: true` removes it. Editable while the study is open.
 - **voice_enabled / video_enabled** — which modalities participants may use. Enabling them exposes extra participation URLs.
 - **redirect_url** — where participants land after finishing. Essential with a paid panel.
 - **Session recording** — off by default.

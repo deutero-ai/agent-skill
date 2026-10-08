@@ -82,22 +82,25 @@ The key also works as `Authorization: Bearer <key>` and, on the legacy API, as a
 |---|---|
 | Tools do not appear | Client has not reloaded. Restart it, then check its MCP log. |
 | 401 Unauthorized | Key wrong, disabled or deleted, or stray whitespace in the header. Regenerate in Settings. |
-| 402 | Out of credits. Check **Billing & Usage**; `get_credit_balance` reports the same number. |
+| 402 | Out of credits. Check **Billing & Usage**; `get_credit_balance` reports the same number. On `publish_study`, read `detail.code`: `plan_limit_reached` is the open-study limit, not credits. |
 | 403 Upgrade required | Plan does not include the feature — simulations and Interview Flow on Hobby, graph mode below Pro, premium tier below Pro, image questions on Hobby. The message names the plan needed; see `plan-limits.md`. |
 | 404 on `/mcp/mcp` | URL must be exactly `/mcp`. |
 | 409 on `set_graph` / `patch_graph` | Someone edited the flow after you read it. Re-read `get_graph` and retry with the new `graph_version`. |
+| 409 `study_locked` | The study is open to participants, so its interview configuration is locked. With the user's go-ahead: `pause_study`, edit, `publish_study`. |
+| 409 / 422 on `publish_study` | A refusal with a `detail.code`. See `deutero-study-authoring/references/publishing.md`. |
 | OAuth prompt never appears | Client does not support remote MCP authorization. Use an API key. |
 
 ## Tool inventory
 
-82 tools. Names are exact.
+89 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
+- **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
 - **Welcome and consent** — `get_welcome`, `set_welcome`, `generate_welcome`, `list_welcome_translations`, `upsert_welcome_translation`, `delete_welcome_translation`
 - **Screening** — `get_screening`, `set_screening_settings`, `create_screening_question`, `update_screening_question`, `delete_screening_question`, `reorder_screening_questions`
 - **Characteristics** — `get_characteristics`, `set_characteristics_settings`, `create_characteristic_question`, `update_characteristic_question`, `delete_characteristic_question`, `reorder_characteristic_questions`
-- **Questions** — `list_questions`, `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`
-- **Interview Flow** — `describe_graph_nodes`, `get_graph`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `activate_graph`, `deactivate_graph`, `get_flow_signals`
+- **Questions** — `list_questions`, `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`, `upload_question_image`, `delete_question_image`
+- **Interview Flow** — `describe_graph_nodes`, `get_graph`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `activate_graph`, `deactivate_graph`, `get_flow_signals`, `upload_flow_image`
 - **Recruitment and embedding** — `get_recruitment`, `update_recruitment`, `list_embed_keys`, `create_embed_key`, `update_embed_key`, `get_embed_snippet`
 - **Personas and simulation** — `list_personas`, `create_persona`, `update_persona`, `delete_persona`, `generate_personas`, `list_simulations`, `run_simulation`, `get_simulation`, `delete_simulation`
 - **Results** — `get_study_stats`, `list_interviews`, `find_interviews_by_external_id`, `get_interview`, `get_transcript`, `bulk_transcripts`, `search_transcripts`, `get_interview_fetches_and_signals`

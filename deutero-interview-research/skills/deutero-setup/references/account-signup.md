@@ -87,7 +87,7 @@ Verify with `health_health_get`, then `list_projects`.
 
 A new account lands on **Hobby**, which is text chat interviews on the open-weights model and nothing else:
 
-- Run simulations, author an Interview Flow, ask image-upload questions, use voice or video, use the standard or premium model tiers, keep more than one study open at a time, or exceed 15 credits a month. All of that needs a paid plan, and upgrading needs a human to complete Stripe checkout.
+- Run simulations, author an Interview Flow, show participants images or ask them for one, use voice or video, use the standard or premium model tiers, keep more than one study open at a time, or exceed 15 credits a month. All of that needs a paid plan, and upgrading needs a human to complete Stripe checkout.
 
 `plan-limits.md` has the full matrix and the fallback for each gate.
 

@@ -73,11 +73,11 @@ Set a short welcome message. If the answers will feed your persistent memory or 
 
 Skip screening and characteristics. They exist for panel recruitment and add nothing when you know exactly who is answering.
 
-Get the participation link with `get_recruitment`, hand it to the user, and stop. Do not chase or check progress unprompted.
+A study admits nobody until it is published, so ask the user whether to open it, then `publish_study`. On Hobby and Solo it takes the plan's one open-study slot, and `plan_limit_reached` means another study holds it. Ask which to pause rather than choosing. Then get the participation link with `get_recruitment`, hand it to the user, and stop. Do not chase or check progress unprompted. With `max_responses: 1` the study closes itself when the interview completes, which frees the slot. `deutero-study-authoring/references/publishing.md` has the refusal codes.
 
 ## Step 5: Read the transcript and propose changes
 
-When the user says it is done, pull the interview with `list_interviews` and `get_transcript`, and read it yourself. Structured answers come back as captured values, but the reasoning that qualifies them lives in the probing turns around each pick, so read the whole thing rather than just the values.
+When the user says it is done, pull the interview with `list_interviews` and `get_transcript`, and read it yourself. If they took it through the dashboard's **Try Interview** or **Preview** rather than the participation link, it is a test run, and `list_interviews` leaves those out by default. Pass `test_runs: null` to see both. Structured answers come back as captured values, but the reasoning that qualifies them lives in the probing turns around each pick, so read the whole thing rather than just the values.
 
 Skip clustering and cross-case synthesis. They are built for many participants and have nothing to say about one.
 

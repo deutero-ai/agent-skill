@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.8.1
+
+Image questions are now gated by plan, not by model.
+
+- The open-weights model reads images, so every tier can run `present_images` and `image_upload` questions. Both are paid-plan features: on Hobby, creating either is rejected with 403, and `publish_study` reports `image_question_denied`. Previously `present_images` was allowed on Hobby, and `image_upload` was refused on Hobby and could not be published on an open-weights study.
+- Simulations show a `present_images` question's images to the persona, so its answers react to what is actually on screen. An image that cannot be loaded reaches the persona as a note saying so.
+- `deutero-study-authoring` lists `present_images` among the question types, with `image_upload`, in the rule of thumb, and both under the Hobby plan gate. `plan-limits.md`, `account-signup.md`, `question-types.md` and `study-fields.md` say images are gated by plan.
+- `deutero-simulation` covers image questions: what to read their transcripts for (usable labels, probes about the images, a missing image) and why a persona's preference between concepts is not evidence. `persona-writing.md` adds a persona set for testing one.
+- `deutero-interview-flow` adds the `images` step config to the linear-versus-graph naming table.
+
+## 1.8.0
+
+Images for **Present Images** questions can be uploaded over MCP, stored exactly as the dashboard's question editor stores them.
+
+- New tools: `upload_question_image` and `delete_question_image` attach and remove the images of a `present_images` question (one image per call, base64 in `image_base64`, JPEG/PNG/WebP up to 10 MB, downscaled to 1024×1024 WebP), and `upload_flow_image` stores an image for an Interview Flow step and returns the `url` for its `images`. All three are locked while the study is open.
+- `present_images` is now a valid `qtype` for `create_question` / `update_question`, and `import_questions_to_graph` carries such questions and their images into the flow.
+- `question-types.md` documents `present_images`. `mcp-clients.md` lists all 89 tools, `publishing.md` adds the three to the locked list, and `python-sdk.md` gives their REST routes, which SDK 0.2 has no methods for.
+
+## 1.7.0
+
+Studies now have a publication status, and only an **open** study admits participants. Every study starts as a draft, publishing checks the plan's open-study limit, credits and a full validation, and an open study's interview configuration is locked until it is paused.
+
+- New tools: `get_publication_status`, `validate_study`, `publish_study` and `pause_study`. `get_study` and `list_studies` return `status` (`draft`, `open`, `paused`, `closed`).
+- New `deutero-study-authoring/references/publishing.md`: the lifecycle, every `publish_study` refusal code and what to do about it, the two acknowledgements (`acknowledge_validation_run_id`, `acknowledge_credit_shortfall`), exactly which tools answer 409 `study_locked` while a study is open, and how a full study closes itself.
+- `deutero-study-authoring` gains Step 8, Publish, between recruitment and reading results. It adds a third rule to "not yours to decide": opening or pausing a study, and accepting a credit shortfall or methodological issues, are the user's calls. `validate_questions` is now described as the quick check it is, with `validate_study` as the one that gates publishing.
+- `deutero-setup`: the open-study limit limits *publishing*, not creating studies. `plan-limits.md` previously said to close a study before `create_study`, which was wrong. The limit counts only open, not-yet-full studies. 402 on `publish_study` may be `plan_limit_reached` rather than credits. `mcp-clients.md` lists all 86 tools and adds `study_locked` and publish refusals to troubleshooting. `python-sdk.md` gives the REST routes for the four tools, which SDK 0.2 has no methods for.
+- Test runs: the dashboard's **Try Interview** / **Preview** dialog runs the researcher's own interview as a test run, with a free allowance per study (3 on Hobby, 5 on paid plans, open weights in chat or on-device voice). Test runs stay out of `max_responses` and out of `get_study_stats` totals (new `test_interviews` count), and the `interview.started` / `interview.completed` webhooks carry `test_run`. `publishing.md` sends users there to try a draft. `webhook-events.md` tells a reward handler to skip `test_run: true`.
+- Reading results: `list_interviews` gains `test_runs` (true / false, the default / null), and `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` gain `include_test_runs`. Every interview, transcript and search hit carries `test_run`. `reading-results.md`, the rewards skill and `python-sdk.md` say test runs are left out by default and how to ask for them. `agent-self-interview` passes `test_runs: null` when the principal took the interview through Try Interview.
+- `agent-self-interview` publishes (with the user's agreement) before handing over the link. `deutero-interview-flow` notes that flow writes are locked while open and that publishing refuses an inactive flow. `deutero-participant-rewards` sets the screen-out redirect before publishing. `deutero-simulation` and `plan-limits.md` send a Hobby user to the dashboard's **Preview** instead of the participation link, because a draft's link admits nobody.
+
 ## 1.6.0
 
 Study details, interview questions and the welcome text can now be AI-generated over MCP, the same generators the dashboard uses. Nothing in the "not covered over MCP" list is about generation any more.

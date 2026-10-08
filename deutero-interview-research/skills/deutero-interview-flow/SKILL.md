@@ -49,6 +49,7 @@ Same concepts, different names. This is the second most common source of rejecte
 | Question text | `question` | `text` |
 | Scale bounds | `scale.minScale` / `maxScale` / `minLabel` / `maxLabel` | `scale.min` / `max` / `min_label` / `max_label` |
 | Capture answer to a variable | — | `output_var` |
+| Images to show (`present_images`) | attached with `upload_question_image` | `images: [{"url", "label"}]` in config — a `url` from `upload_flow_image`, or a public `https://` URL |
 
 `follow_up`, `min_turns`, `max_turns`, `options`, `groups`, `slots`, `min_select` and `max_select` are the same in both.
 
@@ -96,6 +97,8 @@ activate_graph   {"study_id": "…"}
 Nothing saves unless the flow validates, so a failed write leaves the stored flow untouched — but iterating on `check_graph` is faster than reading 422s. When it validates, **read the returned `compiled` block**: it shows the derived captured-answer table and the final execution order with side steps spliced in, which is the only cheap way to confirm the extract nodes landed where you meant.
 
 Saving does not switch the study into graph mode by itself — `activate_graph` does. `deactivate_graph` returns it to the linear list, which is still there.
+
+All of these writes are refused with 409 `study_locked` while the study is open to participants. Build and activate the flow on a draft, then publish. To revise a live flow, pause the study first (with the user's go-ahead, since pausing turns new participants away) and publish again after. Publishing refuses a graph study whose flow isn't active (`graph_not_active`). See `deutero-study-authoring/references/publishing.md`.
 
 Pass `expected_graph_version` from your last `get_graph` so a browser edit made meanwhile is refused with a 409 rather than silently overwritten. Prefer `patch_graph` over `set_graph` when revising a flow the user has since rearranged in the editor — it preserves positions and their layout.
 

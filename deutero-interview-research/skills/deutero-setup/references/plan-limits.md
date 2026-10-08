@@ -11,7 +11,7 @@ Check the plan before designing around a feature. Building a branching flow for 
 | Price | free | $29/mo | $99/mo | $299/mo |
 | Credits / month | 15 | 100 | 400 | 1,500 |
 | Seats | 1 | 1 | 1 | 5 |
-| Concurrent open studies | 1 | 1 | 3 | unlimited |
+| Open (published) studies at once | 1 | 1 | 3 | unlimited |
 | `open_weights` tier | ✓ | ✓ | ✓ | ✓ |
 | `standard` tier | — | ✓ | ✓ | ✓ |
 | `premium` tier | — | — | ✓ | ✓ |
@@ -20,7 +20,7 @@ Check the plan before designing around a feature. Building a branching flow for 
 | Voice interviews | — | ✓ | ✓ | ✓ |
 | Video interviews | — | — | ✓ | ✓ |
 | WhatsApp interviews | — | — | ✓ | ✓ |
-| Image-upload questions | — | ✓ | ✓ | ✓ |
+| Image questions (`present_images`, `image_upload`) | — | ✓ | ✓ | ✓ |
 | Interview Flow (graph mode) | — | — | ✓ | ✓ |
 | Credit top-ups | — | ✓ | ✓ | ✓ |
 
@@ -48,11 +48,11 @@ Two other honest ways to find out: ask the user directly ("which Deutero plan ar
 ## What to do instead, per gate
 
 - **No `standard`/`premium` on this plan** — use `open_weights` and compensate with much more detailed private `explanation` guidance on every question. The cheaper model probes more literally, so enumerate what a good answer covers instead of trusting it to find the thread.
-- **No simulations on Hobby** — you cannot dry-run the instrument. Do a careful `validate_questions` pass instead, and have the user take the interview themselves through the participation link. It is a worse test, but it is a test.
+- **No simulations on Hobby** — you cannot dry-run the instrument. Do a careful `validate_questions` pass instead, and have the user take the interview themselves with the **Preview** button in the dashboard, which works on a draft. It is a worse test, but it is a test.
 - **No Interview Flow below Pro** — keep the study on the linear question list. Most branching can be flattened: ask the discriminating question, then write the follow-ups so they make sense for everyone, and let the interviewer's own probing do the adapting.
-- **No image-upload questions** — ask the participant to describe what they would have shown, in a `text` question with guidance naming the details you want.
+- **No image questions** — instead of asking for a picture, ask the participant to describe what they would have shown, in a `text` question with guidance naming the details you want. Instead of showing images, describe each concept in the question text.
 - **No voice/video/WhatsApp** — text chat, which is also the one modality with no credit surcharge.
-- **Concurrent study limit** — close or archive a study before creating another, rather than letting `create_study` fail partway through a build.
+- **Open-study limit** — it limits *publishing*, not creating. Any number of drafts can exist. `publish_study` refuses with 402 `plan_limit_reached` and lists the open studies holding the slots. Only studies that are open and not yet full count. Ask the user which one to `pause_study` (it turns that study's participants away), or suggest upgrading. `get_publication_status` shows `open_count` / `open_limit` before you try. See `deutero-study-authoring/references/publishing.md`.
 
 ## A caution about where these numbers come from
 

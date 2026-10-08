@@ -7,7 +7,7 @@ get_study_stats {"study_id": "…"}
 list_interviews {"study_id": "…"}
 ```
 
-`get_study_stats` gives counts and completion. `list_interviews` lists the interviews, including simulated ones, which are flagged so you can separate them — always separate them before reporting anything, because a number that mixes simulated and real participants is not a number.
+`get_study_stats` gives counts and completion. `list_interviews` lists the participants' interviews. Simulated (persona) interviews and **test runs** (the researcher's own interviews through the dashboard's Try Interview / Preview) are left out unless you ask: `simulated` and `test_runs` each take `true` (only those), `false` (leave them out, the default) or `null` (both). Every row carries `simulated` and `test_run`. Keep both out of anything you report, because a number that mixes real participants with personas or with the researcher trying their own study is not a number. `get_study_stats` counts them separately (`simulated_interviews`, `test_interviews`).
 
 Do not poll unprompted. Set the quota, hand over the link, and let the user come back.
 
@@ -34,7 +34,7 @@ When the study was recruited with tagged links (`?participant_id=<your id>`), ev
 find_interviews_by_external_id {"study_id": "…", "external_participant_id": "<your id>"}
 ```
 
-It returns every attempt that ID made, newest first, in full detail — the direct answer to "did this person finish?". `list_interviews`, `bulk_transcripts` and `search_transcripts` all take the same filter. This is the read side of the reward round trip; the `deutero-participant-rewards` skill covers the write side.
+It returns every attempt that ID made, newest first, in full detail — the direct answer to "did this person finish?". `list_interviews`, `bulk_transcripts` and `search_transcripts` all take the same filter. `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` leave test runs out unless `include_test_runs: true`, just as they leave personas out unless `include_simulated: true`. This is the read side of the reward round trip; the `deutero-participant-rewards` skill covers the write side.
 
 ## Analysis over many participants
 

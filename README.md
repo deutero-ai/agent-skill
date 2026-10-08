@@ -19,7 +19,7 @@ npx openskills install deutero-ai/agent-skill
 
 - **Run user research from analytics.** Point the agent at a funnel drop, churn cohort, unused feature or support-ticket spike from PostHog, Amplitude, Mixpanel, GA4, a warehouse query or a CSV. It works out the questions only humans can answer, builds the interview study and recruits the exact users the data points at.
 - **Validate a startup idea with customer discovery.** Give it a pitch deck, business plan or one-liner. It pulls out the riskiest assumptions, writes "Mom Test"-style interview questions that can actually disconfirm them, defines a findable target population and screener, and plans recruitment for people you don't have a list of yet.
-- **Build interview studies end to end.** It sets up the project, study goals, all eight question types (open-ended, single and multi-select, scale, ranking, card sort, structured slots, image upload), welcome and consent text, screening questions, participation links and an embeddable in-product interview widget.
+- **Build interview studies end to end.** It sets up the project, study goals, all nine question types (open-ended, single and multi-select, scale, ranking, card sort, structured slots, image presentation, image upload), welcome and consent text, screening questions, participation links and an embeddable in-product interview widget, then validates and publishes the study.
 - **Pilot a study with AI personas before recruiting anyone.** It writes or generates synthetic personas and runs simulated interviews to catch leading questions, broken wording, branches that never fire, and overruns on length or cost.
 - **Author branching interview flows.** It builds conditional logic, per-segment question sets, loops, typed variable extraction, fallbacks for thin answers, and mid-interview webhooks. Every graph is validated before it goes live.
 - **Pay participants automatically.** It tags participants with your own user ID, subscribes to the signed `interview.completed` webhook, verifies the signature, issues the gift card, credit or reward exactly once, and reconciles any missed deliveries.
@@ -84,7 +84,7 @@ Point the client at [`deutero-interview-research/`](deutero-interview-research).
 
 ### Connect the Deutero MCP server
 
-Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 82 tools, and every tool is also a REST route.
+Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 89 tools, and every tool is also a REST route.
 
 **OAuth** is preferred wherever the client supports remote MCP authorization:
 
@@ -125,8 +125,9 @@ No account yet? Sign up at [dashboard.deutero.ai/login](https://dashboard.deuter
 | Area | Tools |
 |---|---|
 | Projects & studies | `create_project`, `draft_study`, `draft_study_from_site`, `create_study`, `update_study`, `get_study`, `list_studies` |
-| Questions | `generate_questions`, `create_question`, `update_question`, `reorder_questions`, `validate_questions` |
+| Questions | `generate_questions`, `create_question`, `update_question`, `reorder_questions`, `validate_questions`, `upload_question_image` |
 | Screening & consent | `set_screening_settings`, `create_screening_question`, `generate_welcome`, `set_welcome`, `upsert_welcome_translation` |
+| Publishing | `validate_study`, `publish_study`, `pause_study`, `get_publication_status` |
 | Recruitment & embedding | `get_recruitment`, `update_recruitment`, `create_embed_key`, `get_embed_snippet` |
 | Interview Flow (branching) | `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `activate_graph` |
 | Personas & simulation | `create_persona`, `generate_personas`, `run_simulation`, `get_simulation` |
@@ -150,10 +151,10 @@ Real people you recruit: your own users by email, link or in-product widget, or 
 Any of them. The skill works from PostHog, Amplitude, Mixpanel, Google Analytics 4, Heap, a SQL or warehouse query, or a pasted CSV.
 
 **Does my plan matter?**
-Some features are plan-gated. Simulations need Solo or above, and branching Interview Flow needs Pro or above. The skills detect your plan and offer a fallback instead of failing. The details are in [`plan-limits.md`](deutero-interview-research/skills/deutero-setup/references/plan-limits.md).
+Some features are plan-gated. Simulations and image questions need Solo or above, and branching Interview Flow needs Pro or above. The skills detect your plan and offer a fallback instead of failing. The details are in [`plan-limits.md`](deutero-interview-research/skills/deutero-setup/references/plan-limits.md).
 
 **What isn't available to agents?**
-Thematic analysis in the dashboard, Prolific recruitment, the Slack and Discord connectors, billing, and Chat with Data are dashboard-only. The skills say so where it matters.
+Thematic analysis in the dashboard, Prolific recruitment, the Slack and Discord connectors, billing (including topping up when a publish is refused for credits), Chat with Data, and the **Preview** link for trying a draft yourself are dashboard-only. The skills say so where it matters.
 
 **Can my backend use this without an agent?**
 Yes. Every MCP tool is a REST route at `https://dashboard.deutero.ai/study-api/api/v1/`, authenticated with `X-API-Key`.

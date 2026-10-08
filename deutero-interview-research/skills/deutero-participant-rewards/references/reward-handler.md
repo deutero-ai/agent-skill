@@ -195,7 +195,7 @@ def completed_interviews(study_id: str):
 
 The listing is paged (`total`, `limit`, `offset`; 50 per page by default, 500 at most), so a sweep that reads one page silently stops paying once completions outnumber the page. Without the SDK it is the same call over `requests` with `X-API-Key` set on the session and `r.json()["interviews"]`.
 
-Note the parameter is spelled differently across surfaces: `list_interviews` takes `simulated` (`false` by default — real only), while `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` take `include_simulated` (`false` by default). Both defaults are safe, and an unrecognised query parameter is ignored rather than rejected — so the wrong spelling leaves the default in place instead of widening the sweep. The only way to pay a persona is to ask for one explicitly.
+Note the parameters are spelled differently across surfaces: `list_interviews` takes `simulated` and `test_runs` (`false` by default: participants only), while `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` take `include_simulated` and `include_test_runs` (`false` by default). A test run is the researcher trying their own study through the dashboard's Try Interview / Preview. It is never owed a reward, and every row and webhook says `test_run`. Both defaults are safe, and an unrecognised query parameter is ignored rather than rejected — so the wrong spelling leaves the default in place instead of widening the sweep. The only way to pay a persona is to ask for one explicitly.
 
 ```python
 def reconcile(study_id: str) -> None:
