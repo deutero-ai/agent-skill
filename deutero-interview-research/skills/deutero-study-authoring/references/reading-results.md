@@ -47,6 +47,8 @@ run_clustering            {"study_id": "…", "question_id": "…", "k": 4}
 get_latest_clustering     {"study_id": "…", "question_id": "…"}
 ```
 
+The two tallies read real participants only by default: personas and test runs stay out unless you pass `simulated: true` (a pilot's own numbers) or `test_runs`, and `completed: true` drops abandoned and failed interviews — use it when the denominator is "people who finished". The two tallies count one answer per interview, the one the interviewer recorded for the question itself; nothing said in a follow-up is a second vote. `get_options_responses` covers rankings too: `count` is first places and `positions[i]` how many interviews put the option at rank `i + 1`, so a top-2 share is `sum(positions[:2]) / responses`. Every tally lists the `answers` it was built from (interview and message), and `get_transcript` carries the same value on the participant's turn as `recorded_answer`. When a number matters, check a few of those against the participant's own words: a reply that names an option only to reject it should not have counted, and if it did, say so.
+
 `run_clustering` saves its result, so it also appears on the study's Analyze page. `get_optimal_clusters` suggests a k; treat the suggestion as a starting point and look at whether the clusters are things you could name.
 
 Clustering is built for many participants. At n=1 or n=2 it has nothing to say — read the transcripts.

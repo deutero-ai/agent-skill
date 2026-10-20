@@ -51,7 +51,7 @@ Same concepts, different names. This is the second most common source of rejecte
 | Capture answer to a variable | — | `output_var` |
 | Images to show (`present_images`) | attached with `upload_question_image` | `images: [{"url", "label"}]` in config — a `url` from `upload_flow_image`, or a public `https://` URL |
 
-`follow_up`, `min_turns`, `max_turns`, `options`, `groups`, `slots`, `min_select` and `max_select` are the same in both.
+`follow_up`, `min_turns`, `max_turns`, `options`, `groups`, `slots`, `min_select`, `max_select` and `randomize_options` are the same in both.
 
 ## Branching
 

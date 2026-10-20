@@ -80,7 +80,7 @@ Credits are Deutero's unit of compute. Rates are per five interview questions.
 | Tier | Model | Rate | Plans |
 |---|---|---|---|
 | `open_weights` | DeepSeek V4 Flash | 1 credit / 5 questions | all, including Hobby |
-| `standard` | Kimi K2.7 | 3 credits / 5 questions | Solo, Pro, Team |
+| `standard` | Claude Haiku 5.5 | 3 credits / 5 questions | Solo, Pro, Team |
 | `premium` | Claude Sonnet 5 | 10 credits / 5 questions | Pro, Team |
 
 `frontier` is a deprecated alias for `premium`.

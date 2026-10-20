@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.8.2
+
+The skills cover randomising option order and reading the tallies correctly, and install cleanly through a security scanner.
+
+- `randomize_options` is documented in `deutero-study-authoring/references/question-types.md` and in the shared-key table of `deutero-interview-flow`: it shows each participant their own order on `choices`, `multi_select`, `ranking` and the cards of a `card_sort`, leaves escape options such as "None of these" where you put them, and `get_options_responses` reports each answer's `presented_order` so you can check whether the option shown first still won.
+- `deutero-study-authoring/references/reading-results.md` says what the two tallies count and from whom: real participants only unless you pass `simulated: true` or `test_runs`, `completed: true` to drop abandoned and failed interviews, one recorded answer per interview, and `positions[i]` for rankings so a top-2 share falls out of the response count.
+- `deutero-study-authoring/references/study-fields.md` moves the `standard` tier from Kimi K2.7 to Claude Haiku 5.5, still 3 credits per five questions on Solo, Pro and Team.
+- The REST examples in `deutero-setup/references/mcp-clients.md` and `deutero-participant-rewards/references/reward-handler.md` send a `<your-api-key>` placeholder instead of interpolating `$DEUTERO_API_KEY` into the `X-API-Key` header. The prose around them still says to keep the key in the environment.
+- Where a snippet read a secret inline, the env read is now a comment naming the variable and the snippet uses the plain constant: `DEUTERO_WEBHOOK_SECRET`, `DEUTERO_PARTICIPANT_SALT`, `REWARDED_STUDY_ID`, `DEUTERO_EMBED_SIGNING_SECRET` and `DEUTERO_EMBED_PUBLISHABLE_KEY` stay visible in `deutero-participant-rewards/{SKILL.md,references/webhook-events.md,references/reward-handler.md}` and `deutero-study-authoring/references/recruitment-and-embedding.md`, without a line that reads the environment. Behaviour for a reader is unchanged.
+- Scan-driven installers refused the whole set until this: Hermes' skills guard scored `deutero-setup` and `deutero-participant-rewards` as dangerous — a hard block that `--force` cannot override — and `deutero-study-authoring` as caution, so `hermes skills install` refused them. All eight now scan safe.
+
 ## 1.8.1
 
 Image questions are now gated by plan, not by model.

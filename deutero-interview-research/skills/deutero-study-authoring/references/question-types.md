@@ -57,8 +57,11 @@ Note the field names here are `minScale` / `maxScale` / `minLabel` / `maxLabel`.
 Order a set. Use it when the tradeoff *between* items is the actual question, not when you only want to know which one is first — for that, `choices` is shorter and clearer.
 
 ```json
-{"qtype": "ranking", "options": ["Price", "Setup time", "Support", "Integrations"]}
+{"qtype": "ranking", "options": ["Price", "Setup time", "Support", "Integrations"],
+ "randomize_options": true}
 ```
+
+Rankings are where list position bites hardest: whatever is listed first gets ranked first more often. `randomize_options: true` shows each participant their own order (it also works on `choices`, `multi_select`, and the cards of a `card_sort`); escape options such as "None of these" or "Other" stay where you put them. Turn it on for any list without a natural order. `get_options_responses` then reports each answer's `presented_order`, so you can check whether the option shown first still won.
 
 ## card_sort
 
