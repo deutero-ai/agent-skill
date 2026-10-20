@@ -60,6 +60,14 @@ rsync -a \
   --exclude .claude-plugin/ \
   "$SRC/" "$DEST/"
 
+# The repo root also carries skills/<name>/ so `hermes skills tap add deutero-ai/agent-skill`
+# works — TapsManager hardcodes the tap path to "skills/" and walks one level under it — and so
+# skills.sh lists the skills at their bare slugs. Same source, same commit, so the copies cannot
+# drift; --delete keeps it a strict mirror.
+rsync -a --delete \
+  --exclude .DS_Store \
+  "$SRC/skills/" "$REPO/skills/"
+
 for f in "${MANIFESTS[@]}"; do
   sed -i '' -E "s/(\"version\": *)\"[^\"]*\"/\1\"$NEW_VERSION\"/" "$f"
 done

@@ -8,6 +8,10 @@
 # Any agent (Claude Code, Cursor, Codex, Windsurf, Aider…) via openskills
 npx openskills install deutero-ai/agent-skill
 
+# Hermes Agent: add the repo as a tap, then install any skill by name
+hermes skills tap add deutero-ai/agent-skill
+hermes skills install deutero-setup
+
 # Claude Code plugin (skills + MCP server in one step)
 /plugin marketplace add deutero-ai/agent-skill
 /plugin install deutero@deutero

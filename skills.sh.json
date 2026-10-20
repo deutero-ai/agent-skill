@@ -1,0 +1,38 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Get started",
+      "description": "Connect an agent to Deutero, then author a study end to end.",
+      "skills": [
+        "deutero-setup",
+        "deutero-study-authoring"
+      ]
+    },
+    {
+      "title": "Research",
+      "description": "Turn analytics, product context or a business idea into interviews with real people.",
+      "skills": [
+        "deutero-product-research",
+        "deutero-customer-development"
+      ]
+    },
+    {
+      "title": "Flows and rewards",
+      "description": "Branching interview flows, and paying participants off the completion webhook.",
+      "skills": [
+        "deutero-interview-flow",
+        "deutero-participant-rewards"
+      ]
+    },
+    {
+      "title": "Test and improve",
+      "description": "Pilot a study on simulated personas, and let an agent interview its own principal.",
+      "skills": [
+        "deutero-simulation",
+        "agent-self-interview"
+      ]
+    }
+  ]
+}
