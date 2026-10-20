@@ -54,10 +54,10 @@ Let the database enforce whichever you keep — an `if already_paid` check in ap
 ## 2. Minting the tag and the link
 
 ```python
-import hmac, hashlib, os
+import hmac, hashlib
 from urllib.parse import urlencode
 
-SALT = os.environ["DEUTERO_PARTICIPANT_SALT"]
+# SALT = os.environ["DEUTERO_PARTICIPANT_SALT"]   # the same salt the tag was minted with
 STUDY_SLUG = "mealkit-churn"
 
 def participant_tag(user_id: str) -> str:
@@ -90,14 +90,13 @@ A signed bag carrying **no** `participant_id` is a legitimate use too: logged-ou
 ## 4. The receiver
 
 ```python
-import os
 from flask import Flask, request, abort, jsonify
 from deutero import webhooks
 from deutero.webhooks import InterviewCompletedEvent
 
+# SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]
+# STUDY_ID = os.environ["REWARDED_STUDY_ID"]
 app = Flask(__name__)
-SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]
-STUDY_ID = os.environ["REWARDED_STUDY_ID"]
 
 @app.post("/hooks/deutero")
 def deutero_hook():
@@ -171,7 +170,7 @@ Deutero attempts each delivery once, so a sweep — nightly while a study is ope
 | `list_webhook_deliveries` | `GET /webhooks/{webhook_id}/deliveries` | `client.webhooks.list_deliveries` |
 
 ```bash
-curl -sS -H "X-API-Key: $DEUTERO_API_KEY" \
+curl -sS -H "X-API-Key: <your-api-key>" \
   "https://dashboard.deutero.ai/study-api/api/v1/studies/$STUDY_ID/interviews/by-external-id?external_participant_id=$TAG"
 ```
 

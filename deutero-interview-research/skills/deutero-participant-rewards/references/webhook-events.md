@@ -66,9 +66,10 @@ In Python, the `deutero` SDK's `webhooks.unwrap` verifies and parses in one call
 ```python
 from deutero import webhooks
 
+# WEBHOOK_SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]
 try:
     event = webhooks.unwrap(request.get_data(), request.headers,
-                            secret=os.environ["DEUTERO_WEBHOOK_SECRET"])
+                            secret=WEBHOOK_SECRET)
 except webhooks.WebhookVerificationError:
     abort(400)
 # event.type, event.data.external_participant_id, event.webhook_id (dedupe key)
@@ -77,12 +78,12 @@ except webhooks.WebhookVerificationError:
 It needs no API key. `webhooks.sign(body, secret=…, msg_id=…)` produces valid headers for testing a receiver locally, and `tolerance=None` turns off the 5-minute bound when replaying stored deliveries. `deutero-setup/references/python-sdk.md` §5 has the rest. The generic `standardwebhooks` library works equally well and returns a dict:
 
 ```python
-import os
 from flask import Flask, request, abort
 from standardwebhooks import Webhook, WebhookVerificationError
 
+# WEBHOOK_SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]   # the whsec_… from create_webhook
 app = Flask(__name__)
-wh = Webhook(os.environ["DEUTERO_WEBHOOK_SECRET"])   # the whsec_… from create_webhook
+wh = Webhook(WEBHOOK_SECRET)
 
 @app.post("/hooks/deutero")
 def deutero_hook():

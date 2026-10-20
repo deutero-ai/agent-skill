@@ -29,11 +29,12 @@ Steps 1 and 3 are the load-bearing ones. Two negatives decide whether this works
 - **Unguessable.** Anyone holding the link can edit the parameter. If your IDs are sequential — `user-1041` — a participant can complete the study four times under three other people's IDs and claim their rewards. Use an HMAC of your user ID with a server-side secret, or a one-time token you issued to that person.
 
 ```python
-import hmac, hashlib, os
+import hmac, hashlib
 
+# PARTICIPANT_SALT = os.environ["DEUTERO_PARTICIPANT_SALT"]   # server-side secret, never shipped to the client
 def participant_tag(user_id: str) -> str:
     return hmac.new(
-        os.environ["DEUTERO_PARTICIPANT_SALT"].encode(), str(user_id).encode(), hashlib.sha256
+        PARTICIPANT_SALT.encode(), str(user_id).encode(), hashlib.sha256
     ).hexdigest()[:32]
 ```
 

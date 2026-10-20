@@ -146,7 +146,8 @@ from deutero import webhooks
 from deutero.webhooks import InterviewCompletedEvent
 
 try:
-    event = webhooks.unwrap(request.get_data(), request.headers, secret=os.environ["DEUTERO_WEBHOOK_SECRET"])
+    # WEBHOOK_SECRET = os.environ["DEUTERO_WEBHOOK_SECRET"]  # read once at startup
+    event = webhooks.unwrap(request.get_data(), request.headers, secret=WEBHOOK_SECRET)
 except webhooks.WebhookVerificationError:
     abort(400)
 

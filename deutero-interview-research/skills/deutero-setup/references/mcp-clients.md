@@ -65,7 +65,7 @@ Keep the key in an environment variable rather than inline in a file that might 
 **REST**
 
 ```bash
-curl -H "X-API-Key: $DEUTERO_API_KEY" \
+curl -H "X-API-Key: <your-api-key>" \
   https://dashboard.deutero.ai/study-api/api/v1/projects
 ```
 

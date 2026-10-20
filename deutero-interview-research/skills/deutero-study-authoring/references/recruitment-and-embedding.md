@@ -150,16 +150,19 @@ One metadata key has a meaning of its own: **`participant_id`**. Whatever it hol
 Metadata limits: at most 32 keys; names matching `^[A-Za-z_][A-Za-z0-9_]{0,63}$`; scalar values only (string ≤ 1 KB, number, bool, null) — no nested objects or arrays; total within the key's byte limit. Anything outside is rejected outright, so validate before signing.
 
 ```python
-import os, time, jwt  # PyJWT
+import time, jwt  # PyJWT
+
+# EMBED_SIGNING_SECRET = os.environ["DEUTERO_EMBED_SIGNING_SECRET"]
+# EMBED_PUBLISHABLE_KEY = os.environ["DEUTERO_EMBED_PUBLISHABLE_KEY"]   # the kid
 
 def mint_embed_token(user) -> str:
     now = int(time.time())
     return jwt.encode(
         {"sub": str(user.id), "iat": now, "exp": now + 600,
          "metadata": {"plan": user.plan, "seats": user.seat_count}},
-        os.environ["DEUTERO_EMBED_SIGNING_SECRET"],
+        EMBED_SIGNING_SECRET,
         algorithm="HS256",
-        headers={"kid": os.environ["DEUTERO_EMBED_PUBLISHABLE_KEY"]},
+        headers={"kid": EMBED_PUBLISHABLE_KEY},
     )
 ```
 
