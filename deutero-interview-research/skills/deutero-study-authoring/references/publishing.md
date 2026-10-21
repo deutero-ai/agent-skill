@@ -34,10 +34,11 @@ pause_study            {"study_id": "…"}
 | `code` | HTTP | Meaning | What to do |
 |---|---|---|---|
 | `plan_limit_reached` | 402 | The plan's open-study limit is used up. `detail.open_studies` lists `{id, alias}` for the studies holding the slots, plus `limit` and `plan_tier`. | Ask the user which study to pause, or suggest upgrading. **Never pause another study on your own initiative.** It turns away that study's participants. |
+| `flow_not_on_plan` | 402 | The study runs an Interview Flow (`interview_mode: graph`), which only Pro and Team include. `detail.plan_tier` names the plan. | Tell the user. Most flows flatten into the question list, which is still there: `deactivate_graph` switches back to it on any plan. Or they upgrade. |
 | `payment_required` | 402 | The subscription is past due, or there is an outstanding balance. | Billing is dashboard-only. Send the user to `/billing`. |
 | `insufficient_credits` | 402 | The balance cannot cover even one worst-case interview (`per_interview` vs `net_available`). | Top up or upgrade (dashboard), or make the study cheaper: a lower tier, fewer questions, or voice/video turned off. |
 | `credit_shortfall` | 409 | The balance covers at least one interview but not every remaining response. | Report `remaining_responses`, `estimated_total` and `net_available`. **Ask the user.** On a yes, call again with `acknowledge_credit_shortfall: true`. Participants beyond the balance will be turned away. |
-| `validation_blocking` | 422 | The study cannot run: `no_questions`, `graph_not_active`, `model_not_on_plan`, `image_question_denied`. | Fix it. These cannot be acknowledged. |
+| `validation_blocking` | 422 | The study cannot run: `no_questions`, `graph_not_active`, `flow_not_on_plan`, `model_not_on_plan`, `image_question_denied`. | Fix it. These cannot be acknowledged. |
 | `validation_ethical` | 422 | The ethics check failed. | Fix what `issues` says, then publish again. This can't be acknowledged, and the verdict stands until the configuration changes, so retrying unchanged gets the same refusal. |
 | `validation_issues` | 409 | Methodological findings only (wording, leading questions, redundancy, quality). `detail.validation_run_id` identifies the run. | Show the user the issues and **ask** whether to fix them or publish anyway. To publish anyway, call again with `acknowledge_validation_run_id` set to that id. It only matches that exact run. |
 | `validation_unavailable` | 503 | The validator gave no verdict. A failed check is never treated as a pass. | Retry after a moment. |
@@ -56,11 +57,11 @@ While a study is `open`, every tool that changes what participants see is refuse
 
 - questions: `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `upload_question_image`, `delete_question_image`
 - flow: `set_graph`, `patch_graph`, `import_questions_to_graph`, `activate_graph`, `deactivate_graph`, `upload_flow_image`
-- welcome: `set_welcome`, `generate_welcome`, `upsert_welcome_translation`, `delete_welcome_translation`
+- welcome: `set_welcome` (including its start-screen copy), `generate_welcome`, `upsert_welcome_translation`, `delete_welcome_translation`, `upload_welcome_hero`, `delete_welcome_hero`
 - screening and characteristics: every write, including their settings
 - `update_study` when it changes an interview-facing field (description, research question, objectives, target population, methodology, language, model tier, voice/video, recording, anonymity, retrieval/web search, consent-form fields). `detail.changed` names the fields it refused, and nothing in that call is saved.
 
-Still editable while open: the study's `name`, `max_responses`, `redirect_url`, and everything in `update_recruitment`. Also embed keys, webhooks, personas, simulations and all reads and analysis.
+Still editable while open: the study's `name`, `max_responses`, `redirect_url`, and everything in `update_recruitment`. Also the look of the pages (`set_theme`, theme and custom CSS), embed keys, webhooks, personas, simulations and all reads and analysis.
 
 Changing a live study goes: tell the user that pausing turns new participants away, and get a yes, then `pause_study` → make the edits → `publish_study`. Say how many interviews are in flight. They finish on the old version, so the transcripts will be a mix of versions. Mention it if the edit changes what a question means. Publishing again re-validates only if the configuration changed. Resuming an untouched study reuses the earlier verdict.
 

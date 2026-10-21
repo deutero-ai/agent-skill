@@ -93,6 +93,17 @@ These are not 0.1's removed `studies.generate`. A study draft and a welcome draf
 | `delete_question_image` | `DELETE /studies/{study_id}/questions/{question_id}/images/{image_id}` |
 | `upload_flow_image` | `POST /studies/{study_id}/graph/images` (returns the `url` for a step's `images`) |
 
+**Not in 0.2 yet: branding.** The brand theme, the start screen's hero image and the welcome's start-screen copy came after 0.2. `client.welcome.set` sends only `message` and `consent`, so set the copy fields (`title`, `time_estimate`, `footer`, `continue_label`, `consent_yes_label`, `consent_no_label`, `hero_alt`) with the REST `PUT`:
+
+| MCP tool | REST |
+|---|---|
+| `get_theme` | `GET /theme` (optional `?study_id=`) |
+| `set_theme` | `PUT /theme` (`{"theme": {…}, "custom_css": "…", "study_id": "…"}`; fields left out are unchanged) |
+| `set_welcome` with start-screen copy | `PUT /studies/{study_id}/welcome` |
+| `upload_welcome_hero` / `delete_welcome_hero` | `POST` / `DELETE /studies/{study_id}/welcome/hero` (`{"image_base64": "…", "alt": "…"}`) |
+
+`deutero-study-authoring/references/branding.md` has the fields and refusals.
+
 A refusal comes back as a non-2xx whose JSON `detail.code` names the reason (`deutero-study-authoring/references/publishing.md`). In the SDK's error types, that's a `ConflictError` for `study_locked` on any locked write. A script that publishes should branch on the code, not on the status: 402 covers both `plan_limit_reached` and credits, and 409 covers both `credit_shortfall` and `validation_issues`. SDK 0.2's study models predate `status`, so if your version doesn't expose it, read it from `GET /studies/{study_id}` directly. Validation can take a minute, so size the timeout for it.
 
 The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, `search_transcripts` → `transcripts.search`, `list_analyzable_questions` → `analysis.list_questions`, `describe_graph_nodes` → `graph.describe_node_types`.

@@ -74,6 +74,8 @@ Every participant link takes two optional parameters, appended by whoever builds
 https://app.deutero.ai/chat?s=mealkit-churn&source=email&participant_id=6f2c…
 ```
 
+Neither needs an Interview Flow: they work on every study, linear or not, and are stored on the interview whatever the study runs.
+
 Both are visible and editable by whoever holds the link, so they label a row and prove nothing about who answered. Keep the ID pseudonymous — a hash of your own user ID, a panel token, a row key, never an email address or a name. An embedded study sets the same ID through the metadata bag's `participant_id` key instead.
 
 Reading them back: every interview, transcript and search hit carries `external_participant_id` and `web_source`, `list_interviews` / `bulk_transcripts` / `search_transcripts` filter on the ID, and `find_interviews_by_external_id {"study_id": "…", "external_participant_id": "…"}` answers "did this person finish?" directly.
@@ -125,7 +127,7 @@ For anything the attributes do not cover, skip auto-init (omit the key and the t
 
 **Styling and placement.** The widget mounts into a shadow root on a host `<div>` appended to `<body>`, and that host carries a `data-deutero-widget` attribute — so `document.querySelector('[data-deutero-widget]')` is the handle for it, both when debugging and when you need to move it. Nodes *inside* the shadow root are genuinely out of reach of page selectors.
 
-- **Colour** comes from custom properties set on the host: `--dtro-accent` and `--dtro-accent-contrast` are the two that matter (unaltered, the launcher is Deutero purple on a site that is not), with `--dtro-z` for stacking. `init({theme: {accent: "#7c3aed"}})` sets them for you — a bare key is prefixed `--dtro-`, and a key already starting `--` is passed through.
+- **Colour** is set here, not by the brand theme (`set_theme` styles the hosted chat, voice and video pages, not the widget), so match it to the theme's accent by hand. It comes from custom properties set on the host: `--dtro-accent` and `--dtro-accent-contrast` are the two that matter (unaltered, the launcher is Deutero purple on a site that is not), with `--dtro-z` for stacking. `init({theme: {accent: "#7c3aed"}})` sets them for you — a bare key is prefixed `--dtro-`, and a key already starting `--` is passed through.
 - **Position is fixed at `bottom: 20px`** with `right`/`left: 20px`, and there is no offset option. On a site with its own sticky footer or cookie bar the launcher lands on top of it; the fix is to raise the host yourself (`querySelector('[data-deutero-widget]').style.bottom = …`, recomputed when your own bar changes height).
 - **Overriding the widget's own rules needs doubled specificity** — `.dtro-root.dtro-root { … }` rather than `.dtro-root { … }`. Its stylesheet arrives as `adoptedStyleSheets`, which cascades *after* a `<style>` element you append into the same shadow root at equal specificity, so the obvious version silently loses.
 
@@ -166,7 +168,62 @@ def mint_embed_token(user) -> str:
     )
 ```
 
-Mint one token per page load; never cache it in a cookie or reuse it across users. Metadata shows up with the interview afterwards, page-supplied and verified values distinguished, and `get_interview` returns it with its provenance — which is what lets you cut results by segment honestly.
+The same in TypeScript with `jose`:
+
+```ts
+import { SignJWT } from "jose";
+
+const secret = new TextEncoder().encode(process.env.DEUTERO_EMBED_SIGNING_SECRET!);
+
+export async function mintEmbedToken(user: AppUser): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  return new SignJWT({ metadata: { plan: user.plan, seats: user.seatCount } })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT", kid: process.env.DEUTERO_EMBED_PUBLISHABLE_KEY! })
+    .setSubject(user.id)
+    .setIssuedAt(now)
+    .setExpirationTime(now + 600)
+    .sign(secret);
+}
+```
+
+**Getting the token onto the page.** A server-rendered page writes it straight into the tag, in place of the publishable key; the rest of the tag is unchanged, and `data-metadata` may sit alongside for values that need no verification (a name in both takes the signed value). `get_embed_snippet` returns this variant too.
+
+```html
+<script async src="https://app.deutero.ai/widget/v1/deutero-widget.js"
+        data-signed-token="<token minted for this request>"
+        data-survey-id="<study uuid>"
+        data-mode="chat"></script>
+```
+
+A single-page app, or a widget opened on click, has no server render to write into. Add an authenticated endpoint of your own that returns a fresh token, fetch it first, and set the attribute **before** appending the script, because the widget reads the tag's attributes when the script loads:
+
+```js
+const { token } = await fetch("/embed/interview-token", { credentials: "include" }).then((r) => r.json());
+const s = document.createElement("script");
+s.async = true;
+s.src = "https://app.deutero.ai/widget/v1/deutero-widget.js";
+s.dataset.signedToken = token;   // instead of dataset.publishableKey
+s.dataset.surveyId = "<study uuid>";
+s.dataset.mode = "chat";
+document.body.appendChild(s);
+```
+
+Mint one token per page load; never cache it in a cookie or reuse it across users. The signing secret never goes to the browser, so never mint in client code, not even "temporarily".
+
+**When a signed bootstrap is rejected**, it is one of these, roughly in order of frequency:
+
+- **Expired or too long-lived**: `exp` more than 900s after `iat`, or the page was loaded after `exp` (a cached HTML page carrying an old token is the usual cause; don't let a CDN cache pages with a token in them).
+- **Bad signature or missing `kid`**: signed with a different key's secret, or no `kid` header. The secret is shown only once, at creation. If it is lost there is no way to read it back: `create_embed_key` again, switch the server to the new pair, then `update_embed_key {"status": "revoked"}` on the old one.
+- **Wrong origin**: the page's origin must exactly match one of the key's `allowed_origins` (scheme, host and port; `https://www.acme.com` is not `https://acme.com`).
+- **Wrong study**: a study-scoped key rejects a bootstrap naming any other study.
+- **Revoked key**: takes effect on the next bootstrap; interviews already collected keep their recorded provenance.
+- **Metadata out of limits** (above): rejected outright, not truncated.
+
+The user-facing version of all of this, for a developer who isn't working through an agent, is the dashboard's **Signed Metadata** help article (`/help/doc/embed-signed-metadata`).
+
+Metadata shows up with the interview afterwards, page-supplied and verified values distinguished, and `get_interview` returns it with its provenance — which is what lets you cut results by segment honestly.
+
+Collecting metadata and reading it back needs no Interview Flow, on any study. A flow comes in only when the interview itself must route on a value, such as a section only trial users see.
 
 ## 6. Invitation copy
 

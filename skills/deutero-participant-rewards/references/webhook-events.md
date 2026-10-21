@@ -176,7 +176,7 @@ An Interview Flow (the `deutero-interview-flow` skill) can also send a webhook *
 - `get_interview_fetches_and_signals {"interview_id": "…"}` shows what one interview actually sent and whether the receiver accepted it.
 - Interview Flow is a Pro-and-above feature, so this route is unavailable on Hobby and Solo.
 
-Use a signal when something must happen *during* the interview (provision a trial, fetch an order, alert a human). Use `interview.completed` when something must happen *because it finished* — a reward almost always belongs in the second category, since a signal fires whether or not the participant goes on to complete.
+Use a signal when something must happen *during* the interview (provision a trial, fetch an order, alert a human). Use `interview.completed` when something must happen *because it finished* — a reward almost always belongs in the second category, since a signal fires whether or not the participant goes on to complete. A study that only needs the second never needs an Interview Flow.
 
 ## 7. Troubleshooting
 

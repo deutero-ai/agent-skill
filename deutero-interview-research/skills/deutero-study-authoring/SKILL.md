@@ -1,6 +1,6 @@
 ---
 name: deutero-study-authoring
-description: Build a Deutero study end to end over MCP (or from Python with the `deutero` SDK) — project, study details (written or AI-drafted from a brief or a landing page), interview questions of the right type (written or AI-generated), welcome and consent, screening, recruitment, publishing (opening a study to participants, pausing it, the edit lock), and reading the results back. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite interview questions, set up screening or a participation link, publish, pause or resume a study, or hits `study_locked` or a publish refusal, or asks what question type to use; and use it as the mechanical reference underneath the more specific Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which all decide *what* to ask and then hand the building to this one. Reach for it too whenever someone asks how to turn a research goal, a survey draft or a list of topics into an AI-conducted interview.
+description: Build a Deutero study end to end over MCP or the `deutero` Python SDK — project, study details (written or AI-drafted), interview questions of the right type, welcome and consent, screening, recruitment, branding the participant pages (colours, fonts, hero image, custom CSS), publishing (open, pause, the edit lock) and reading results. Use this whenever the user wants to create, edit, review or fix a Deutero study, add or rewrite questions, set up screening or a participation link, make the interview look like their brand, publish, pause or resume a study, or hits `study_locked`, `invalid_theme` or a publish refusal, or asks what question type to use. It is the mechanical reference under the other Deutero skills (product research, customer development, simulation, interview flow, agent self-interview), which decide what to ask and hand the building to this one. Reach for it too when someone wants to turn a research goal, a survey draft or a topic list into an AI-conducted interview.
 ---
 
 # Authoring a Deutero study
@@ -79,7 +79,9 @@ Questions get better when they are anchored. A question about a category of expe
 - **Probe targets** — what a complete answer contains. "If they say cost, get the number they compared against" is useful; "probe for detail" is not.
 - **Terseness handling** — where a short answer is likely, name the aspect worth pressing on and say when to accept the answer and move on. Some answers are short because the matter is settled, and pressing wastes the participant's time.
 
-Bound the probing with `min_turns` and `max_turns`. Three to four turns suits an anchored question; beyond that the interviewer starts inventing angles.
+Conditional follow-ups belong here too: "if they mention price, ask what they compared it with", "if they say no, ask what stopped them", "if the answer is thin, offer these three positions as a straight choice". The interviewer reads each answer before deciding what to say next, so a note covers most of what looks like branching. An Interview Flow is for hard routing, loops, piping and mid-interview calls, not for this — see `deutero-interview-flow`, "First, decide whether you need one".
+
+Bound the probing with `min_turns` and `max_turns`. Three to four turns suits an anchored question; beyond that the interviewer starts inventing angles. Switching probing off (`follow_up: false`, `max_turns: 1`) suits a factual question, not a whole study: done everywhere, it turns the interview into a form, and the participant's first answer is all you get.
 
 **A generated first draft.** `generate_questions` writes 3–20 questions from the study details (plus any `additional_instructions`) and appends them to the list, extending rather than repeating what is already there. It is the dashboard's Generate with AI, and it is only as good as the details it reads, so set those first. Treat the result as a draft to hold against Steps 3 and 4: check each type choice, rewrite generic guidance into real probe targets, anchor questions to events, split anything compound, then `update_question` / `delete_question` / `reorder_questions`. Use `additional_instructions` to carry what the details do not — the occasion to anchor to, types you want, vocabulary to avoid. It takes thirty seconds to two minutes. Image-upload questions are proposed only when the study's tier can read images, and are dropped on plans that cannot (`skipped_image_questions`). When a topic skill has already chosen the questions, write those by hand instead — the generator does not know what you decided.
 
@@ -91,11 +93,15 @@ Run `validate_questions` when the set is written. It checks clarity, leading or 
 
 `generate_welcome` drafts that text — the dashboard's Welcome → Generate — and saves nothing. It writes it to be read aloud, introduces the interviewer as an AI working for the researcher, and scales the consent language to `survey_type` (`consent_level`: IRB-style for `sociology`, standard for `polling`, short for `user_experience` and `customer_development`). Run it **after** the questions exist, because the length it quotes comes from the question count (about three minutes each; 15 minutes when there are none). It reads `benefits`, `risks` and `support_contact` from the study, and the researcher's name and position from the profile of the account you are connected as, so set the study fields first. Whatever is missing comes back as a bracketed placeholder such as `[Insert researcher name]`, listed in `placeholders`: fill every one in, or ask the user for it, before `set_welcome` — participants hear the text verbatim. Then read the draft against the paragraph above; the generator does not know about a reward, a recording or how the answers will be used unless the study fields say so.
 
+The start screen also takes optional copy on `set_welcome` (`title`, `time_estimate`, `footer`, button labels) and a hero image or large logo (`upload_welcome_hero`). `message` renders as limited Markdown there. **How the pages look** (brand colours, fonts, corners, custom CSS on Pro and Team) is `set_theme`, set once for the organization and overridden per study only when a study should look different. Ask for the brand's colours rather than inventing them. Readability is enforced, so a bright brand colour may be refused for text. `references/branding.md` has the fields, the refusals and how to fix them.
+
 ## Step 6: Screening, only if you are recruiting strangers
 
 Screening questions are multiple choice and run before the interview. `acceptable_options` lists **who qualifies**; anyone whose answer is not in that list is screened out.
 
 Three to five questions at most — each one loses participants. Screen on behaviour rather than intention ("have you cancelled in the last three months" beats "would you ever cancel"), and avoid giveaway phrasing, because a qualifying answer that is obvious will simply be selected. `references/recruitment-and-embedding.md` covers the tool calls and the panel-provider redirect.
+
+Screened-out answers are not lost. A screened-out person leaves an incomplete interview with `termination_reason: "disqualified"`, and `get_interview` returns their answers under `qualifications`. So there is no reason to screen inside the interview or in an Interview Flow.
 
 ## Step 7: Recruit
 
@@ -122,6 +128,8 @@ A study that reaches `max_responses` closes by itself. Raise the limit and publi
 
 ## Step 9: Read the results
 
+People who drop out partway are part of the data. Every turn is saved as it happens, so an abandoned interview stays in `list_interviews` (`completed: false`) with its transcript, and the tallies below include it unless you pass `completed=true`. Nothing needs building to keep partial answers.
+
 `get_study_stats` for the count, `list_interviews` then `get_transcript` for the detail, `bulk_transcripts` to pull many at once, `search_transcripts` to find an exchange without re-reading everything (string, semantic and hybrid modes).
 
 For structured questions, `get_scale_responses` and `get_options_responses` summarise. For open text across many participants, `run_clustering` groups similar answers — `get_optimal_clusters` first if you want the suggested k. Clustering is built for many participants and has nothing to say about one or two.
@@ -144,4 +152,5 @@ Everything above is the same over the `deutero` Python SDK — one method per to
 - `references/question-types.md` — every question type, its config fields, and where it fails
 - `references/recruitment-and-embedding.md` — links, screening, the embed widget, recruitment email and in-app copy, ethics
 - `references/publishing.md` — publishing, pausing, refusal codes and acknowledgements, the edit lock, full studies
+- `references/branding.md` — brand theme (colours, fonts, weights, corners), custom CSS, start-screen copy and hero image
 - `references/reading-results.md` — transcripts, search, clustering, what to report

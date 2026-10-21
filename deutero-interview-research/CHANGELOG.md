@@ -1,5 +1,49 @@
 # Changelog
 
+## 1.8.8
+
+- `recruitment-and-embedding.md` covers the whole signed-token flow, not just minting: a TypeScript (`jose`) example next to the Python one, the signed script tag, the single-page-app case (fetch the token from your own endpoint, set `data-signed-token` before appending the script), and a checklist for a rejected signed bootstrap (expiry, `kid` / wrong secret, lost secret and key rotation, origin, study scope, revocation, metadata limits). It points to the dashboard's Signed Metadata help article for developers working without an agent.
+
+## 1.8.7
+
+The branding tools are documented across the skills, not just in passing.
+
+- New `deutero-study-authoring/references/branding.md`. It covers organization vs study themes, every theme key, the readability rule and how to fix an `invalid_theme` refusal, how `set_theme` replaces the stored theme, custom CSS (what is stripped, the stable `data-part` hooks), the start-screen copy fields and limits, the hero image, translated copy, and common mistakes.
+- `deutero-study-authoring`: the description covers branding and `invalid_theme`, and Step 5 points to the new reference.
+- `deutero-setup`: the tool inventory lists `get_theme`, `set_theme`, `upload_welcome_hero` and `delete_welcome_hero` (93 tools). The error table adds the org-admin 403 and `invalid_theme`. `plan-limits.md` adds custom CSS (Pro and Team) and the brand theme (every plan). `python-sdk.md` gives the REST routes for the branding tools, which SDK 0.2 lacks.
+- `publishing.md`: the hero tools are under the edit lock; `set_theme` is not. `recruitment-and-embedding.md`: the embed widget's colours are set on the host, not by the theme.
+
+## 1.8.6
+
+- `set_theme` takes `body_weight` as well as `display_weight`. Each must be a weight the font it applies to comes in (the default fonts when none is set), and a refusal lists the weights that font has. Font names must match a Google Fonts family exactly.
+
+## 1.8.5
+
+Brand theming and a richer start screen for the participant pages.
+
+- New tools `get_theme` / `set_theme`: brand colours (light and dark), Google Fonts, corner style and default mode, for the organization or one study (`study_id`). Unreadable colour pairs are refused with `invalid_theme` and each problem listed. `custom_css` is Pro and Team only (403 `upgrade_required` otherwise) and is returned sanitised, with `css_stripped`. Appearance is not locked while a study is open.
+- `set_welcome` takes optional start-screen copy (`title`, `time_estimate`, `footer`, `continue_label`, `consent_yes_label`, `consent_no_label`, `hero_alt`). Fields left out keep their value. `message` is limited Markdown on the web start screen, and `warnings` lists what will not render. New `upload_welcome_hero` / `delete_welcome_hero`. Welcome translations take `fields`. `deutero-study-authoring` Step 5 covers it.
+
+## 1.8.4
+
+Interview Flow is enforced as a Pro-and-Team feature, and the skills say what a flow is not needed for in the cases that led agents to build one anyway.
+
+- The plan gate the skills described is now real. Below Pro, every flow-authoring tool (`describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `upload_flow_image`, `activate_graph`) answers 403 with `detail.code: "upgrade_required"`, and `publish_study` refuses a study in graph mode with `flow_not_on_plan` (402). `get_graph`, `get_flow_signals` and `deactivate_graph` stay open on every plan, so a study left in graph mode can switch back to its question list. `deutero-interview-flow` and `publishing.md` list both codes.
+- `deutero-interview-flow`'s table adds four rows that do not need a flow: screening (never screen inside a flow; a screened-out person's answers are on their interview), keeping what people said when they drop out (every turn is saved; `output_var` is not a retention mechanism), optional questions at the end, and an opt-in for contact details.
+- "Hard routing" now means routing to different *blocks* of questions. If each path would be a single question, write one question whose guidance covers each case. Count before committing: decisions that lead to one or two questions and rejoin, or that route people to an `end` early, are a question list or screening.
+- New in `deutero-interview-flow`: when an existing flow misbehaves, run the test again before repairing it, and rebuild on the question list if it fails.
+- `deutero-study-authoring`: screened-out answers are kept (Step 6), abandoned interviews are part of the results and of the tallies unless `completed=true` (Step 9), and switching probing off on every question turns the interview into a form (Step 4).
+- Flows now come back with advisory `warnings` from `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `get_graph` and `activate_graph`: `screening_in_flow`, `optional_block_in_flow`, `single_question_branch`, `parallel_paths`, `flow_not_needed` and `interview_as_form`. They never stop a save. `validate_study` reports them as methodological issues on location kind `flow` (and `interview_as_form` on a question list too), so publishing needs them fixed or acknowledged. `compiled.length` gives the questions and estimated minutes on the shortest and longest paths. `deutero-interview-flow` says what each warning means and what to do.
+
+## 1.8.3
+
+Interview Flow is for interviews that cannot work without it, and every step of a flow must lead onward to an end.
+
+- `deutero-interview-flow` now opens with whether a flow is needed at all, before the plan check. A table lists what does not need one and what to use instead: `?source=` and `?participant_id=` on the link, embed metadata, answer-dependent follow-ups in the question's guidance, `follow_up` / `min_turns` / `max_turns` for thin answers, screening and characteristics questions, the `interview.completed` webhook and `redirect_url`, and the question types themselves for tallies. A flow is reserved for hard routing, loops, piping and mid-interview calls. The description no longer reads as a trigger to build a flow for any conditional question.
+- The terse-answer fallback starts in guidance. Built as a flow, it is for when the forced choice must be recorded as its own structured answer, or the study is a flow anyway. `graph-patterns.md` and `agent-self-interview` say the same; neither calls it "the pattern that earns the graph" any more.
+- New section "Every step leads onward to an end" in `deutero-interview-flow`, and matching notes in `graph-patterns.md`. A step with no outgoing edge is an error (`dead_end`), not an implicit end, so the last question on each path connects to `end` explicitly. It also covers `fanout`, `unreachable`, `no_path_to_end` (a loop-back edge is not a way out), `no_default` (a classifier class with no path of its own goes down the default), side steps that follow a question with no edge onward, `remove_node` not reconnecting neighbours, and the editor's new `unconnected_path` for an unwired Branch path.
+- `deutero-study-authoring` (Step 4 and `recruitment-and-embedding.md`), `deutero-participant-rewards`, `webhook-events.md` and `plan-limits.md` say where their features work without a flow: link parameters, embed metadata, conditional follow-ups and completion webhooks.
+
 ## 1.8.2
 
 The skills cover randomising option order and reading the tallies correctly, and install cleanly through a security scanner.

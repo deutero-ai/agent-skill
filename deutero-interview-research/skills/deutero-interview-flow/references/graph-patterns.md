@@ -1,6 +1,10 @@
 # Interview Flow patterns
 
+These patterns are for a study that already needs a flow — hard routing, loops, piping or mid-interview calls (`SKILL.md`, "First, decide whether you need one"). None of them is a reason to build one. Source, participant IDs, embed metadata and answer-dependent follow-ups all work on the linear question list.
+
 Call `describe_graph_nodes` before using any of this. It is generated from the validator's own registry and is authoritative; the patterns here are a starting shape, not a schema.
+
+Every example below obeys the rule the validator enforces without exception: **every step leads onward to an `end` step.** Each question has exactly one outgoing edge, each decision has a default path, and the last question on every path connects to `end`. Keep that true as you adapt them.
 
 The two-question example in section 6 and the readback pattern in section 5 have both been run through `check_graph` and return `valid: true`, so they are safe to copy and adapt. Re-validate after adapting.
 
@@ -19,7 +23,7 @@ Contents:
 
 ## 1. The per-question unit
 
-Each interview question is four steps, not one:
+In a flow that uses the terse-answer fallback, a question that needs it is four steps, not one:
 
 ```
 question (open_ended)  →  extract (typed capture, attached "after")
@@ -31,9 +35,11 @@ decision (llm_classifier: thin / substantive)
 
 The extract node attaches with `"after": "<question id>"` and is never listed in `edges`. The compiler splices it in. Only `start`, `end`, `question` and `decision` steps appear in `edges`; getting this wrong is the most common authoring error.
 
+Both arms rejoin at the next question, and the forced-choice question needs its own edge onward. Leave that edge out and the flow is refused with `dead_end`.
+
 ## 2. Terse-answer fallback
 
-This is the pattern that earns the graph. A linear list asks an open question, receives "no", and moves on with nothing. A classifier decision detects the thin answer and converts the same question into a forced choice between the concrete options you already suspect are in play.
+Try this in the question's guidance first: "If the answer is a bare yes/no or under about ten words, offer these three positions as a straight choice …" works on the linear list. Build it as a flow when the choice must be recorded as its own structured answer, or when the study is a flow anyway. A classifier decision then detects the thin answer and converts the same question into a forced choice between the concrete options you already suspect are in play.
 
 ```json
 {"id": "d_handback_depth", "type": "decision", "config": {
@@ -194,9 +200,17 @@ Run `check_graph` and iterate until `valid` is true before calling `set_graph`. 
 
 Codes worth knowing in advance:
 
+`dead_end` means a step has no outgoing edge. A step with nothing after it does not end the interview; only an `end` step does, so connect the last question on each path to `end`. When the code is reported on an extract or webhook, the question it follows has no edge onward.
+
+`no_path_to_end` means a step has no forward path to an `end`, usually a loop whose only way out loops back. `unreachable` means nothing leads to the step from `start`; delete it or connect it.
+
+`fanout` means a question has two outgoing edges. Only a decision splits; put one between the question and its paths.
+
+`unconnected_path` comes from the browser editor: a Branch path with nothing connected to it. Connect it or remove the path.
+
 `var_not_guaranteed` means a step uses a captured answer that branching makes optional. This is the one the fallback pattern tends to produce, since choice variables only exist on the thin path. Fix with `on_missing: "skip"` or `"fallback"` on the consuming step, not by removing the branch.
 
-`no_default` means a decision has multiple paths and none is marked `"default": true`. Every classifier decision needs one.
+`no_default` means a decision does not have exactly one path marked `"default": true`. Every classifier decision needs one, and a class with no path of its own goes down it. A deterministic decision may leave it out only when its conditions cover every possible answer of a choices or scale question.
 
 `unattached` means an extract or webhook is missing `after`, or a context_fetch is missing `before`.
 

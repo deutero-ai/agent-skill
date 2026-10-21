@@ -23,11 +23,11 @@ MCP is for an agent in a session. Code that runs on its own — a webhook receiv
 | Skill | For |
 |---|---|
 | `deutero-setup` | Account creation, OAuth or API key, connection and plan checks, and the Python SDK. Start here when tools are missing or returning 401/403. |
-| `deutero-study-authoring` | The mechanics: project, study details, question types, guidance, welcome, screening, recruitment, publishing, results. The hub the others build on. |
+| `deutero-study-authoring` | The mechanics: project, study details, question types, guidance, welcome, screening, recruitment, branding the interview pages, publishing, results. The hub the others build on. |
 | `deutero-product-research` | Studies driven by analytics and product context — a funnel drop, a churn cohort, a dead feature. Platform-agnostic; covers in-product embedding and recruitment copy. |
 | `deutero-customer-development` | Discovery studies from a business idea, deck or plan. Assumption extraction, questions about the past, finding a population you have no list of. |
 | `deutero-simulation` | Testing a study against AI personas before spending real participants on it. |
-| `deutero-interview-flow` | Branching interviews: the graph mode, its validator, and the patterns worth using. |
+| `deutero-interview-flow` | Branching interviews: whether you need one (usually not), the graph mode, its validator, and the patterns worth using. |
 | `deutero-participant-rewards` | Making a finished interview *do* something: tagging participants with your own ID, the `interview.completed` webhook, paying exactly once, reconciling misses. |
 | `agent-self-interview` | An agent eliciting its own operating preferences from its principal, and turning the answers into proposed memory changes. |
 
@@ -40,5 +40,7 @@ Thematic analysis; Prolific recruitment; Slack and Discord connectors; billing; 
 Webhook endpoints *are* manageable over MCP (`create_webhook` and friends), and were not before 1.3.0 — the dashboard's Settings → Webhooks page and the API manage the same endpoints.
 
 Study details and interview questions *can* be AI-generated over MCP since 1.6.0: `draft_study` (from a brief, the Create Study wizard), `draft_study_from_site` (from a landing page) and `generate_questions` (the Study Questions page's Generate with AI) — and so can the welcome and consent text, with `generate_welcome`.
+
+Branding *is* covered since 1.8.5: `get_theme` / `set_theme` style the hosted interview pages (colours, fonts and weights, corners, default mode, and custom CSS on Pro and Team) for the organization or one study, and `set_welcome` plus `upload_welcome_hero` set the start screen's copy and hero image. The live preview is dashboard-only (**Account → Brand**, and **Appearance** per study).
 
 Publishing *is* covered since 1.7.0: a study admits participants only while it is open, and `publish_study`, `pause_study`, `validate_study` and `get_publication_status` manage that. Topping up credits or upgrading when a publish is refused for billing reasons is still dashboard-only, and so is the **Preview** link for trying a draft yourself.

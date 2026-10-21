@@ -76,7 +76,7 @@ These exist only in the dashboard, so plan around them rather than hunting for a
 - Prolific recruitment, Slack and Discord connectors
 - Billing, Chat with Data
 
-Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`), and publishing and pausing a study (`publish_study`, `pause_study`, `validate_study`, `get_publication_status`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
+Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`), and publishing and pausing a study (`publish_study`, `pause_study`, `validate_study`, `get_publication_status`) and branding the interview pages (`get_theme`, `set_theme`, `upload_welcome_hero`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
 
 ## Keeping credentials safe
 

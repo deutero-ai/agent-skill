@@ -16,6 +16,8 @@ The answer is a round trip you set up before recruiting:
 4. reconcile         find_interviews_by_external_id, for anything missed
 ```
 
+All four work on a plain linear study. None of them needs an Interview Flow, so do not build one to carry a participant ID or to learn that someone finished.
+
 Steps 1 and 3 are the load-bearing ones. Two negatives decide whether this works at all, and both are cheaper to read now than to discover after the study has run:
 
 - **Never pay from the redirect.** A redirect is a URL the participant can replay, and will. Step 2 is for the participant's experience; the payout hangs off step 3, the signed event.

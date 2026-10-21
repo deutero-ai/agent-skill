@@ -87,7 +87,7 @@ Point the client at [`deutero-interview-research/`](deutero-interview-research).
 
 ### Connect the Deutero MCP server
 
-Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 89 tools, and every tool is also a REST route.
+Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 93 tools, and every tool is also a REST route.
 
 **OAuth** is preferred wherever the client supports remote MCP authorization:
 

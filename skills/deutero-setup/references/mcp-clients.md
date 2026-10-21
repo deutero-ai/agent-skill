@@ -83,7 +83,9 @@ The key also works as `Authorization: Bearer <key>` and, on the legacy API, as a
 | Tools do not appear | Client has not reloaded. Restart it, then check its MCP log. |
 | 401 Unauthorized | Key wrong, disabled or deleted, or stray whitespace in the header. Regenerate in Settings. |
 | 402 | Out of credits. Check **Billing & Usage**; `get_credit_balance` reports the same number. On `publish_study`, read `detail.code`: `plan_limit_reached` is the open-study limit, not credits. |
-| 403 Upgrade required | Plan does not include the feature — simulations and Interview Flow on Hobby, graph mode below Pro, premium tier below Pro, image questions on Hobby. The message names the plan needed; see `plan-limits.md`. |
+| 403 Upgrade required | Plan does not include the feature — simulations and Interview Flow on Hobby, graph mode below Pro, premium tier below Pro, image questions on Hobby, custom CSS below Pro. The message names the plan needed; see `plan-limits.md`. |
+| 403 on `set_theme` without `study_id` | Only an organization admin can set the organization's theme. Set a study's theme instead, or ask an admin. |
+| 422 `invalid_theme` | A theme value is not allowed or text would be unreadable; `detail.problems` lists each one. See `deutero-study-authoring/references/branding.md`. |
 | 404 on `/mcp/mcp` | URL must be exactly `/mcp`. |
 | 409 on `set_graph` / `patch_graph` | Someone edited the flow after you read it. Re-read `get_graph` and retry with the new `graph_version`. |
 | 409 `study_locked` | The study is open to participants, so its interview configuration is locked. With the user's go-ahead: `pause_study`, edit, `publish_study`. |
@@ -92,11 +94,12 @@ The key also works as `Authorization: Bearer <key>` and, on the legacy API, as a
 
 ## Tool inventory
 
-89 tools. Names are exact.
+93 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
 - **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
-- **Welcome and consent** — `get_welcome`, `set_welcome`, `generate_welcome`, `list_welcome_translations`, `upsert_welcome_translation`, `delete_welcome_translation`
+- **Welcome and consent** — `get_welcome`, `set_welcome`, `generate_welcome`, `list_welcome_translations`, `upsert_welcome_translation`, `delete_welcome_translation`, `upload_welcome_hero`, `delete_welcome_hero`
+- **Brand theme** — `get_theme`, `set_theme`
 - **Screening** — `get_screening`, `set_screening_settings`, `create_screening_question`, `update_screening_question`, `delete_screening_question`, `reorder_screening_questions`
 - **Characteristics** — `get_characteristics`, `set_characteristics_settings`, `create_characteristic_question`, `update_characteristic_question`, `delete_characteristic_question`, `reorder_characteristic_questions`
 - **Questions** — `list_questions`, `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`, `upload_question_image`, `delete_question_image`
