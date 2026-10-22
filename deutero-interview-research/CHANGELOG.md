@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.9
+
+What the branding tools now reach, as the interviewer catches up with them.
+
+- `branding.md`: the embed widget wears the study's theme (colours for both modes, fonts, weights, corners, default mode), but not custom CSS or the start-screen copy. Custom CSS is now applied on the hosted pages, and their Content-Security-Policy blocks any outside load a sanitiser misses (images only from Deutero and the logo host, fonts only from Google Fonts). The welcome turn in the thread, transcript, messaging channels and speech is the message with its Markdown stripped (links as "text (url)"). Voice and video show the start-screen title, message, hero, time estimate, footer and `continue_label`. Two new common mistakes.
+- `recruitment-and-embedding.md`: widget colour no longer has to be matched by hand. The site's `theme` (or its own `--dtro-*` CSS) still wins, with the full property list; new `data-study-theme="false"` / `useStudyTheme: false` opts out. Also lists `data-language` and `data-language-picker`, and what a strict site CSP costs.
+
 ## 1.8.8
 
 - `recruitment-and-embedding.md` covers the whole signed-token flow, not just minting: a TypeScript (`jose`) example next to the Python one, the signed script tag, the single-page-app case (fetch the token from your own endpoint, set `data-signed-token` before appending the script), and a checklist for a rejected signed bootstrap (expiry, `kid` / wrong secret, lost secret and key rotation, origin, study scope, revocation, metadata limits). It points to the dashboard's Signed Metadata help article for developers working without an agent.

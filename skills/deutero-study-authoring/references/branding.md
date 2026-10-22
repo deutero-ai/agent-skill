@@ -1,6 +1,6 @@
 # Branding the interview pages
 
-Participants take a Deutero interview on hosted chat, voice and video pages. Those pages carry the organization's name and logo, and can also carry its look: colours for light and dark mode, fonts and weights, corner style, the mode the page opens in, and on Pro and Team, custom CSS. The start screen can carry its own title, button labels, footer and a hero image.
+Participants take a Deutero interview on hosted chat, voice and video pages, or in the embed widget on your own site. The hosted pages carry the organization's name and logo, and can also carry its look: colours for light and dark mode, fonts and weights, corner style, the mode the page opens in, and on Pro and Team, custom CSS. The start screen can carry its own title, button labels, footer and a hero image. The embed widget wears the same theme, but not the custom CSS or the start-screen copy (see "Where it shows").
 
 Two tools set the look and two set the hero image. The start screen's copy rides on `set_welcome`.
 
@@ -72,6 +72,7 @@ For the cases the theme can't express. Send a stylesheet as `custom_css` (at mos
 
 - Every selector is scoped to the interview page: `.bubble` becomes `.dtro-themed .bubble`, and `:root[data-theme="dark"] .bubble` keeps its dark-mode condition.
 - Removed: `url()` and every other way of loading something (so no background images or custom font files), `@import`, `@font-face`, every at-rule except `@media`, `@supports` and `@keyframes`, and any rule that would hide the start screen's buttons (`display: none`, `visibility: hidden`, `opacity` below 0.5).
+- The pages also send a Content-Security-Policy, so even a load the sanitiser missed is blocked: images come only from Deutero and the organization's logo host, fonts only from Google Fonts. Fonts belong in `theme` (`font_body`, `font_display`), not in CSS.
 - A study's CSS applies after the organization's.
 - After a downgrade, CSS is kept but switched off. `custom_css_active` says whether it is applied right now; `custom_css_available` says whether the plan includes it.
 
@@ -90,7 +91,9 @@ Target the stable hooks, which survive markup changes: `[data-part="brand"]`, `"
 | `consent_yes_label` / `consent_no_label` | 60 | "Yes" / "No" |
 | `hero_alt` | 300 | none; alt text for the hero image |
 
-`message` is limited Markdown on the start screen: paragraphs, `**bold**`, `*italic*`, bullet and numbered lists, `###` headings and `https:` / `mailto:` links. Images and HTML are not rendered. `warnings` in the response lists anything that won't render, and the welcome is saved anyway, so fix it and save again. Slack, WhatsApp and the spoken greeting get `message` as plain text, and none of the other copy.
+`message` is limited Markdown on the start screen: paragraphs, `**bold**`, `*italic*`, bullet and numbered lists, `###` headings (all shown at one size) and `https:` / `mailto:` links. Images and HTML are not rendered: HTML shows as the literal text, and any other link shows its text only. `warnings` in the response lists anything that won't render, and the welcome is saved anyway, so fix it and save again.
+
+Everywhere else gets `message` with the Markdown taken out: the welcome turn in the chat thread and in the transcript, Slack, WhatsApp, and the spoken greeting on voice and video. Links read "text (url)" there. None of the other start-screen copy appears outside the start screen. So write a message that reads well as plain text too, and don't hide anything a participant needs (what the study is, how their data is used) in the footer alone: it shows on the web start screen only.
 
 Button labels change only what the button says. The interview still records consent as consent, so `"Count me in"` / `"Not today"` is safe.
 
@@ -100,8 +103,8 @@ Button labels change only what the button says. The interview still records cons
 
 ## Where it shows, and where it doesn't
 
-- The hosted chat, voice and video pages, including the participation link, show the theme, start-screen copy and hero.
-- **The embed widget is styled separately**, by the host page (`--dtro-accent` and friends; see `recruitment-and-embedding.md`). Set its colours to match the theme.
+- The hosted chat, voice and video pages, including the participation link, show everything: the theme, custom CSS, start-screen copy and hero. On chat, picking another language on the start screen switches to the translated copy. Voice and video show the title, message, hero, time estimate, footer and `continue_label` (on their Start button) in the study's language; their consent decision comes later, in the conversation itself, so the consent labels don't apply there.
+- **The embed widget wears the theme** by default: colours for both modes, fonts and weights, corner style and `default_mode`, with the theme's Google Fonts loaded into the host page. It does not get custom CSS (the widget lives in its own shadow root on someone else's site), the start-screen copy or the hero. The site embedding it can still override any colour (`theme` in `init`) or opt out of the study's look entirely (`data-study-theme="false"`); see `recruitment-and-embedding.md`. If the host page's own Content-Security-Policy blocks Google Fonts, the widget falls back to system fonts.
 - The dashboard has the same controls with a live preview: **Account → Brand** for the organization, and **Appearance** in the study sidebar. Point the user there to see the result, since nothing over MCP renders it.
 
 ## Common mistakes
@@ -113,3 +116,5 @@ Button labels change only what the button says. The interview still records cons
 - **A weight the font doesn't have.** The refusal lists the weights it does have; pick one of those.
 - **Theming per study by default.** Brand the organization once; overrides are for studies that should look different.
 - **Hiding the consent buttons in CSS.** It's stripped, and an unreadable consent screen is an ethics problem anyway.
+- **Styling the embed widget by hand to match the theme.** It already wears the theme; per-site `theme` overrides are for sites that need the widget to differ from the study's look.
+- **Relying on Markdown outside the web start screen.** The thread, transcript, messaging channels and speech get plain text.
