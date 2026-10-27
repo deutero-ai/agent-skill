@@ -45,6 +45,20 @@ Participants also get an automatic "Prefer not to answer" on every screening que
 
 `get_characteristics`, `set_characteristics_settings`, `create_characteristic_question` and friends profile the sample without gating it — demographics and segment questions you want alongside the transcript. Useful for a panel study you will later cut by segment. Pointless at n=1, and every question costs completion rate, so ask only what you will actually analyse.
 
+### Contact details
+
+To follow up with participants — a second round, a diary study, a reward you send yourself — turn on the contact step in the same call:
+
+```
+set_characteristics_settings {"study_id": "…",
+  "contact": {"collect_email": true, "collect_phone": false,
+              "timing": "end", "required": false, "message": ""}}
+```
+
+Participants get a separate form (email and/or phone, plus a name unless `anonymous` is true) at the `start` (before question 1) or the `end` (before the thank-you). It is optional unless `required` is true; an empty `message` uses the default, in the interview's language. What they give is stored apart from the transcript, so analysis stays anonymous; read it back with `list_study_contacts` / `get_interview_contact` (`reading-results.md`, "Contact details") or on the interview's page in the dashboard. `get_study` reports the current settings as `contact`. Only the fields you send change: omit `contact`, `enabled` or `anonymous` to leave it as it is. It is locked while the study is open.
+
+Ask only when you will use it: a contact form, especially a required one at the start, costs completion rate. To join interviews to people you already know, pass your own id on the link (`?participant_id=`) instead — see `deutero-participant-rewards`.
+
 ## 3. The share link
 
 ```

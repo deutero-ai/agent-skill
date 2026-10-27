@@ -144,7 +144,9 @@ Then **read `warnings`**. A valid flow saves regardless, but each warning names 
 - `single_question_branch` — every path is at most one question before they rejoin. One question with guidance covering each case does the same.
 - `flow_not_needed` — every Branch is one of those, and there is no loop, piping, fetch or signal. Build on the question list instead.
 - `parallel_paths` — several paths of one Branch go to the same step. One path with `"op": "in"` does it.
-- `interview_as_form` — most open questions have follow-ups off. The interviewer will take first answers and move on.
+- `interview_as_form` — half or more of the open questions allow at most one follow-up (`follow_up: false`, or `max_turns` 1 or 2). The interviewer takes first answers and moves on, so it runs as a survey. Tell the user; if it isn't meant as a quick factual check, set `max_turns` 3–4 on the open questions.
+
+`validate_study` also reads the questions in path order. A question that re-asks what the one straight before it already drew out comes back first, as `sequential_overlap`. Rework it (merge the two, or fold the second into the first one's guidance) rather than acknowledging it.
 
 `compiled.length` gives the questions and estimated minutes on the shortest and longest paths (a loop counts once). Hold the longest against what the welcome message and the user promised participants.
 

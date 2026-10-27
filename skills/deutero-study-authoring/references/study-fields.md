@@ -31,6 +31,8 @@ Both return fields named as `create_study` takes them (`name`, `description`, `r
 | `customer_development` | `problem_hypothesis`, `customer_segment` | `solution_concept`, `key_assumptions`, `success_criteria` |
 | `user_experience` | `business_context`, `research_need` | `target_users`, `research_type` (`exploratory` / `evaluative` / `generative`), `constraints` |
 | `polling` | `research_question` | `population_segment`, `geographic_scope`, `survey_context` (`exploratory` / `validation` / `tracking` / `comparative`), `data_quality_requirements` |
+| `customer_satisfaction` | `experience_focus`, `customer_base` | `known_signals`, `decision_to_inform` |
+| `customer_preferences` | `preference_domain`, `customer_base` | `options_to_compare`, `purchase_context`, `decision_to_inform` |
 
 `language` is both the language the draft is written in and the study's interview language — one of English, Spanish, French, German, Italian, Portuguese, Russian, Japanese, Korean, Chinese.
 
@@ -44,7 +46,24 @@ A draft is generic where the brief was. Before `create_study`, put in what only 
 
 ## survey_type
 
-`sociology`, `user_experience`, `customer_development`, `polling`. It steers the interviewer's manner and framing, so pick the one that matches the work rather than the one that sounds most impressive.
+It steers the interviewer's role and manner, the consent wording, question generation and the analysis framing, and it is locked while the study is open. Pick the one that matches the work rather than the one that sounds most impressive:
+
+| survey_type | For | The interviewer |
+|---|---|---|
+| `user_experience` | How people use a product or service | Walks through real, recent use — goals, difficulties, workarounds — and never defends the design |
+| `customer_development` | Whether a problem is real, before building | Asks about past behaviour and current workarounds, discounts hypotheticals, does not pitch |
+| `customer_satisfaction` | Why existing customers are or are not satisfied with a product, service or touchpoint | Traces satisfaction to specific interactions and the gap between expectation and experience; never speaks for the company |
+| `customer_preferences` | How customers choose between products, options or attributes | Works from real recent choices and trade-offs, probes stated against actual preference, stays neutral between options |
+| `sociology` | Academic social research into experiences, meanings and social context | Non-judgemental, careful with sensitive topics; full IRB-style consent |
+| `polling` | Public opinion on issues, policies or candidates | Strictly neutral, explores the reasons behind views, accepts uncertainty or a refusal to say |
+
+The close calls:
+
+- **`customer_satisfaction` vs `user_experience`.** Satisfaction is about the relationship with the company — service, support, delivery, value, a journey stage — and explains a CSAT or NPS signal. UX is about using the product itself. A returns process is satisfaction; a confusing settings screen is UX.
+- **`customer_preferences` vs `customer_development`.** Preferences studies a choice people already make (which plan, which brand, which feature matters); development tests whether a problem exists at all before there is anything to choose.
+- **`customer_satisfaction` vs `customer_preferences`.** Satisfaction asks how something they have went; preferences asks why they picked it over the alternatives. If the decision waiting on the study is "fix what is broken", it is satisfaction; if it is "what to offer or how to package it", preferences.
+
+Both customer types assume the participants are, or recently were, customers. For people who have never bought, use `customer_development`.
 
 ## The four fields that steer everything
 

@@ -87,7 +87,7 @@ Point the client at [`deutero-interview-research/`](deutero-interview-research).
 
 ### Connect the Deutero MCP server
 
-Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 93 tools, and every tool is also a REST route.
+Endpoint: `https://dashboard.deutero.ai/mcp` (streamable HTTP). It has 95 tools, and every tool is also a REST route.
 
 **OAuth** is preferred wherever the client supports remote MCP authorization:
 
@@ -135,6 +135,7 @@ No account yet? Sign up at [dashboard.deutero.ai/login](https://dashboard.deuter
 | Interview Flow (branching) | `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `activate_graph` |
 | Personas & simulation | `create_persona`, `generate_personas`, `run_simulation`, `get_simulation` |
 | Results & analysis | `list_interviews`, `get_transcript`, `bulk_transcripts`, `search_transcripts`, `get_scale_responses`, `get_options_responses`, `run_clustering` |
+| Participant contacts | `list_study_contacts`, `get_interview_contact` |
 | Webhooks & rewards | `create_webhook`, `rotate_webhook_secret`, `list_webhook_deliveries`, `find_interviews_by_external_id` |
 | Account | `get_credit_balance`, `health_health_get` |
 

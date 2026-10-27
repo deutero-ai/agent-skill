@@ -36,6 +36,19 @@ find_interviews_by_external_id {"study_id": "…", "external_participant_id": "<
 
 It returns every attempt that ID made, newest first, in full detail — the direct answer to "did this person finish?". `list_interviews`, `bulk_transcripts` and `search_transcripts` all take the same filter. `find_interviews_by_external_id`, `bulk_transcripts` and `search_transcripts` leave test runs out unless `include_test_runs: true`, just as they leave personas out unless `include_simulated: true`. This is the read side of the reward round trip; the `deutero-participant-rewards` skill covers the write side.
 
+## Contact details
+
+When the study ran the contact step (see `recruitment-and-embedding.md`), what people gave is kept apart from everything above: no transcript, search hit, analysis or webhook carries it. `get_interview` says only `contact_status` — `shared`, `declined`, or null when no step ran. To read the details:
+
+```
+list_study_contacts   {"study_id": "…"}                 # everyone who shared, newest first
+get_interview_contact {"interview_id": "…"}             # one person
+```
+
+`list_study_contacts` leaves out declines and test runs unless `include_declined` / `test_runs` is true, filters on `completed`, and pages (`limit` up to 500, `offset`). Each row has the `interview_id` and your `external_participant_id`, so it joins to everything else.
+
+It is personal data. Use it to reach the person — a follow-up round, a diary study, a reward — and never paste it into a summary, a report, a cluster label or anything you share. Every read that returns details is in the organization's audit log. If the user only wants a count, `list_study_contacts` with `limit: 1` gives `total` without you handling a list of addresses.
+
 ## Analysis over many participants
 
 ```

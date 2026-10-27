@@ -74,7 +74,7 @@ from deutero import Deutero
 print(Deutero().projects.list())   # DEUTERO_API_KEY from the environment
 ```
 
-The key also works as `Authorization: Bearer <key>` and, on the legacy API, as an `api_key` query parameter — prefer the header.
+The key also works as `Authorization: Bearer <key>` — either header is fine.
 
 ## Troubleshooting
 
@@ -94,7 +94,7 @@ The key also works as `Authorization: Bearer <key>` and, on the legacy API, as a
 
 ## Tool inventory
 
-93 tools. Names are exact.
+95 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
 - **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
@@ -107,6 +107,7 @@ The key also works as `Authorization: Bearer <key>` and, on the legacy API, as a
 - **Recruitment and embedding** — `get_recruitment`, `update_recruitment`, `list_embed_keys`, `create_embed_key`, `update_embed_key`, `get_embed_snippet`
 - **Personas and simulation** — `list_personas`, `create_persona`, `update_persona`, `delete_persona`, `generate_personas`, `list_simulations`, `run_simulation`, `get_simulation`, `delete_simulation`
 - **Results** — `get_study_stats`, `list_interviews`, `find_interviews_by_external_id`, `get_interview`, `get_transcript`, `bulk_transcripts`, `search_transcripts`, `get_interview_fetches_and_signals`
+- **Participant contacts** — `list_study_contacts`, `get_interview_contact` (personal data; every read is audited)
 - **Analysis** — `list_analyzable_questions`, `get_scale_responses`, `get_options_responses`, `run_clustering`, `get_optimal_clusters`, `get_latest_clustering`
 - **Webhooks** — `list_webhook_event_types`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `rotate_webhook_secret`, `list_webhook_deliveries`
 - **Account** — `get_credit_balance`, `health_health_get`

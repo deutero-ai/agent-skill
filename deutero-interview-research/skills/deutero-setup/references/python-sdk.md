@@ -76,6 +76,13 @@ Every MCP tool — except the four generators and the four publication tools lis
 
 These are not 0.1's removed `studies.generate`. A study draft and a welcome draft store nothing — pass the fields to `client.studies.create`, or the text to `client.welcome.set`, yourself; `generate_questions` saves what it writes. Allow for the latency — twenty seconds to two minutes — in your HTTP timeout.
 
+**Not in 0.2 yet: participant contacts.** The contact step and its tools came after 0.2. Its settings are a `contact` object on `PUT /studies/{study_id}/characteristics/settings` (`collect_email`, `collect_phone`, `timing`, `required`, `message`); the details people gave are personal data, read with:
+
+| MCP tool | REST |
+|---|---|
+| `list_study_contacts` | `GET /studies/{study_id}/contacts?include_declined=&completed=&test_runs=&limit=&offset=` |
+| `get_interview_contact` | `GET /interviews/{interview_id}/contact` |
+
 **Not in 0.2 yet: publication.** Publishing, pausing and validating a study also came after 0.2. Same base URL and key:
 
 | MCP tool | REST |

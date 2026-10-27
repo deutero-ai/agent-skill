@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.9.1
+
+- `study-fields.md`'s `survey_type` section lists all six types with what each is for and what the interviewer does, how to choose between the close ones (satisfaction vs UX, preferences vs customer development, satisfaction vs preferences), and that both customer types are for people who are, or were, customers.
+- `deutero-product-research` uses `customer_satisfaction` when the data is a satisfaction signal (CSAT/NPS, complaints, churn blamed on service) and `customer_preferences` when the question is how customers choose, instead of always `user_experience`.
+
+## 1.9.0
+
+Two new study types, and the type now shapes the interviewer.
+
+- `survey_type` adds `customer_satisfaction` (why existing customers are or are not satisfied) and `customer_preferences` (how customers choose between options). `draft_study` takes their brief fields: `experience_focus` / `preference_domain` and `customer_base` required, `known_signals`, `options_to_compare`, `purchase_context` and `decision_to_inform` optional (`study-fields.md`).
+- Every type now gives the interviewer its own role and approach. `create_study` and `update_study` describe each type.
+- `survey_type` is locked while a study is open: `update_study` refuses a change with `study_locked`. Pause the study to change it.
+- `deutero-study-authoring` lists all six types with what each is for.
+
+## 1.8.13
+
+`set_characteristics_settings` changes only the fields you send. `enabled` is no longer required, and an omitted `anonymous` no longer resets the study to non-anonymous, which used to add a name field to the contact form. `recruitment-and-embedding.md`'s contact example no longer sends `"enabled": false`, which turned characteristics off.
+
+## 1.8.12
+
+`validate_study` reads questions in the order participants meet them.
+
+- New methodological issue `sequential_overlap`, listed first: a question that re-asks what the one straight before it already drew out. `publish_study`'s `validation_issues` refusal says to rework it; `publishing.md` and `deutero-interview-flow` say to merge or fold it into guidance rather than acknowledge it.
+- `interview_as_form` now fires when half or more of the open questions allow at most one follow-up, counting `max_turns: 2`. It used to need two thirds with follow-ups fully off.
+- Overlap between questions on different branches of a flow is no longer reported: no participant hears both.
+
+## 1.8.11
+
+Contact details are readable through the API.
+
+- New tools `list_study_contacts` (everyone in a study who shared contact details — declines and test runs only when asked, `completed` filter, paging) and `get_interview_contact` (one interview: `shared` / `declined` / `none` with the details). Both are audited and described as personal data.
+- `get_interview` adds `contact_status`; `get_study` adds the study's `contact` settings. Transcripts, search, analysis and webhooks still never carry the details.
+- `reading-results.md` has a "Contact details" section (how to read them, and to keep them out of anything reported); `mcp-clients.md` lists the two tools (95 tools); `python-sdk.md` and `reward-handler.md` give their REST routes.
+
+## 1.8.10
+
+- `recruitment-and-embedding.md`: the contact step — `set_characteristics_settings` takes a `contact` object (`collect_email`, `collect_phone`, `timing` start/end, `required`, `message`). Participants answer in a separate form; the details are kept out of the transcript and the API, and shown only on the interview's page in the dashboard.
+
 ## 1.8.9
 
 What the branding tools now reach, as the interviewer catches up with them.

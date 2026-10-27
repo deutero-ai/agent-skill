@@ -167,6 +167,8 @@ Deutero attempts each delivery once, so a sweep — nightly while a study is ope
 | `list_interviews` | `GET /studies/{study_id}/interviews` | `client.interviews.list` |
 | `find_interviews_by_external_id` | `GET /studies/{study_id}/interviews/by-external-id?external_participant_id=…` | `client.interviews.find_by_external_id` |
 | `get_interview` | `GET /interviews/{interview_id}` | `client.interviews.get` |
+| `list_study_contacts` | `GET /studies/{study_id}/contacts` | — (REST; newer than SDK 0.2) |
+| `get_interview_contact` | `GET /interviews/{interview_id}/contact` | — (REST; newer than SDK 0.2) |
 | `list_webhook_deliveries` | `GET /webhooks/{webhook_id}/deliveries` | `client.webhooks.list_deliveries` |
 
 ```bash
