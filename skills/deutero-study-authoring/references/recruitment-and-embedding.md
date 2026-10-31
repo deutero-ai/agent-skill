@@ -73,7 +73,7 @@ update_recruitment {"study_id": "…", "short_url_slug": "mealkit-churn",
 
 - Text: `https://app.deutero.ai/chat?s=<slug>` — slugs are unique across all of Deutero, so a taken one is refused.
 - Direct form, useful for testing: `https://app.deutero.ai/chat?survey_id=<study id>`.
-- Voice: use `https://app.deutero.ai/voice?survey_id=<study id>` (the slug form is currently broken). Voice needs a paid plan; video and WhatsApp need Pro or Team. Hobby is text chat only, so share the text link and nothing else.
+- Voice: use `https://app.deutero.ai/voice?survey_id=<study id>` (the slug form is currently broken). On-device voice works on every plan, cloud voice needs Solo or higher, video and WhatsApp need Pro or Team (`plan.interview_modalities`, `plan.whatsapp`). On Hobby, share the text link and, if the study has on-device voice on, the voice link. A voice or video link is returned only when the study enables it and the plan includes it.
 
 Test both paths before recruiting: one run that qualifies, one that does not.
 
@@ -271,7 +271,26 @@ If you'd rather not, no follow-up — this is the only email.
 
 For an in-app invitation the same content compresses to a sentence and a button, and the targeting does the work the first paragraph did in email. Send from a person, not a no-reply address, and give people a way to reach the researcher — contact details come from the researcher profile.
 
-## 7. Dashboard-only channels
+## 7. Sharing the study itself
+
+Different from recruiting: a **share link** (`/s/<token>`) lets another researcher read the study (questions, welcome, screening) and copy it into their own Deutero account as a draft. Use it to hand a study to a colleague, a client or the community, never to recruit participants.
+
+```
+get_study_share_links {"study_id": "…"}
+create_study_share    {"study_id": "…", "access": "anyone"}
+create_study_share    {"study_id": "…", "access": "invited", "emails": ["a@example.com"]}
+refresh_study_share   {"study_id": "…", "share_id": "…"}
+revoke_study_share    {"study_id": "…", "share_id": "…"}
+```
+
+- Call `get_study_share_links` first; each `create_study_share` makes a *new* link. It returns live links only, newest first, with `url`, `access`, `snapshot_taken_at` and `invited_emails`; an empty list means the study was never shared.
+- The page shows the study **as it was** at `snapshot_taken_at`, not the live study. After editing, call `refresh_study_share` to update it; the URL does not change. Copies already made are unaffected.
+- `invited` links open only for the listed emails, who confirm their address with a one-time code. The API records the emails but does **not** email them: give the returned `url` to those people yourself.
+- Copies leave out the sharer's contact details, redirect URL, theme and flow webhook/fetch URLs, so there is nothing of yours to scrub, but the questions and guidance are fully readable. Check with the user before sharing a study that contains client-confidential wording.
+- `revoke_study_share` is permanent (409 `share_revoked` on a later refresh); studies already copied stay with their owners. Make a new link if needed. Revoking only on the user's say-so.
+- All four work while the study is open.
+
+## 8. Dashboard-only channels
 
 Not reachable over MCP; tell the user where to go rather than searching for a tool.
 
@@ -281,7 +300,7 @@ Not reachable over MCP; tell the user where to go rather than searching for a to
 - **Snowball sampling** — invites finishing participants to pass the study on.
 - **Suggest recruitment strategy** — drafts a strategy, a social post and an email template from the study details.
 
-## 8. Ethics
+## 9. Ethics
 
 - Say who is running the study and what participation involves, before anyone starts.
 - Do not describe the study as something other than what it is, and do not disguise a sales or marketing contact as research.

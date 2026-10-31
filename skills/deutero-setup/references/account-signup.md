@@ -85,9 +85,9 @@ Verify with `health_health_get`, then `list_projects`.
 
 ## What a fresh agent account cannot do
 
-A new account lands on **Hobby**, which is text chat interviews on the open-weights model and nothing else:
+A new account lands on **Hobby**, which is text chat and on-device voice interviews on the open-weights model and nothing else:
 
-- Run simulations, author an Interview Flow, show participants images or ask them for one, use voice or video, use the standard or premium model tiers, keep more than one study open at a time, or exceed 15 credits a month. All of that needs a paid plan, and upgrading needs a human to complete Stripe checkout.
+- Run simulations, author an Interview Flow, show participants images or ask them for one, use cloud voice or video, use the standard or premium model tiers, keep more than one study open at a time, or exceed 15 credits a month. All of that needs a paid plan, and upgrading needs a human to complete Stripe checkout.
 
 `plan-limits.md` has the full matrix and the fallback for each gate.
 

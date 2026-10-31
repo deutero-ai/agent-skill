@@ -7,12 +7,12 @@ description: Test a Deutero study before spending real participants on it by run
 
 Simulation runs your interview against an AI persona. It is an instrument test, not a source of evidence, and everything useful about it follows from taking that distinction seriously.
 
-It costs **2× the live interview rate** and **needs a paid plan** — Hobby returns "Upgrade required: Simulations are not available on the Hobby plan." Check `get_credit_balance` and the plan before promising a run.
+It costs **2× the live interview rate** and **needs a paid plan** — Hobby returns "Upgrade required: Simulations are not available on the Hobby plan." Check `get_credit_balance` — its `plan.simulations` and `plan.model_tiers` — before promising a run. Most new users are on Hobby.
 
 ## What it is genuinely good for
 
 - **Catching broken questions** — wording the interviewer misreads, a question that confuses rather than probes, a double-barrelled question that gets half answered, follow-ups that never terminate.
-- **Exercising an Interview Flow along each path.** Branches that never fire in casual testing are exactly what simulation finds cheaply. This is the strongest case for it.
+- **Exercising an Interview Flow along each path** (Pro and Team, where flows exist). Branches that never fire in casual testing are exactly what simulation finds cheaply. This is the strongest case for it.
 - **Detecting leading questions.** Run a sceptic and a non-customer. If they come out sounding encouraging, the instrument is leading and no amount of real recruitment will fix that.
 - **Estimating length and cost** before buying participants.
 - **Checking a `present_images` question** — whether the labels are clear enough to refer to, whether the interviewer probes the images rather than the abstract idea, and whether an image is missing.
@@ -54,9 +54,9 @@ list_simulations {"study_id": "…", "status": "…", "limit": 20}
 delete_simulation {"simulation_id": "…"}
 ```
 
-**Simulations need a paid plan.** On Hobby, `run_simulation` is refused with 403 whatever the credit balance says — there is no workaround, and the honest answer is to say so and fall back to `validate_questions` plus having the user take the interview themselves with the dashboard's **Preview** button, which works while the study is still a draft. Check before writing a panel of personas: `get_credit_balance`'s `base_limit` reads 15 on Hobby (100 Solo, 400 Pro, 1500 Team), or just ask. The `premium` tier needs Pro or Team on top of that, so on Solo the choice is `open_weights` or `standard`.
+**Simulations need a paid plan.** On Hobby, `run_simulation` is refused with 403 whatever the credit balance says — there is no workaround, and the honest answer is to say so and fall back to `validate_questions` plus having the user take the interview themselves with the dashboard's **Preview** button, which works while the study is still a draft. Check before writing a panel of personas: `get_credit_balance`'s `plan.simulations` is false on Hobby. Do not infer the plan from `base_limit`. The tiers you may run on are `plan.model_tiers` — on Solo, `open_weights` or `standard`; `premium` needs Pro or Team.
 
-**Ask the user which `model_tier` to run the simulation on before the first run**, every time — simulated interviews cost **2×** the live rate, so a panel of personas on `premium` adds up fast, and the tier is the user's call rather than yours. Quote the per-run estimate and the panel total at the tier they choose. A simulation does not have to run on the study's own tier: testing wording and flow coverage is usually fine on `open_weights`, while judging how well the interviewer *probes* needs the tier the real study will use. Say which of those the run is for, recommend accordingly, and wait for the answer.
+**Ask the user which of the plan's `model_tiers` to run the simulation on before the first run**, every time — simulated interviews cost **2×** the live rate, so a panel of personas on `premium` adds up fast, and the tier is the user's call rather than yours. Quote the per-run estimate and the panel total at the tier they choose. A simulation does not have to run on the study's own tier: testing wording and flow coverage is usually fine on `open_weights`, while judging how well the interviewer *probes* needs the tier the real study will use. Say which of those the run is for, recommend accordingly, and wait for the answer.
 
 `run_simulation` starts **one** run and returns immediately with an `estimated_credits` figure. To sweep a panel, call once per persona. Poll `get_simulation` until `status` leaves `running`; it ends `completed` or `failed`. A run still unsettled two hours after it started reports `failed` — its worker is gone and its reservation has expired.
 

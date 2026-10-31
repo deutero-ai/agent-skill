@@ -42,7 +42,7 @@ What happens on each outcome? Build, don't build, change segment, change the mod
 - **Timeline.** How soon do they need this? It decides whether you can recruit a real population or only reach their own network.
 - **Budget for participants.** Incentives change who answers and how fast. Free recruiting skews toward people who like the founder.
 - **Existing contacts.** A waitlist, a newsletter, past customers, a community they run. Enormously useful for speed and enormously biased; use it, and say so in the report.
-- **Deutero plan.** Simulations and the standard/premium tiers need a paid plan; Hobby is 15 credits a month and open-weights only.
+- **Deutero plan.** Read it from `get_credit_balance`'s `plan` block rather than asking. Simulations and the standard/premium tiers need a paid plan; Hobby is 15 credits a month, open-weights only, and has no Interview Flow.
 
 ## Mining a deck or plan
 

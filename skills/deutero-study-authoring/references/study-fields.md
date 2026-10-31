@@ -7,7 +7,7 @@ create_project {"name": "…", "description": "…"}
 create_study   {"project_id": "…", "name": "…", "survey_type": "user_experience"}
 update_study   {"study_id": "…", "research_question": "…", "objectives": "…",
                 "target_population": "…", "methodology": "…",
-                "model_tier": "standard", "max_responses": 50}
+                "model_tier": "open_weights", "max_responses": 50}
 get_study      {"study_id": "…"}
 ```
 
@@ -92,7 +92,7 @@ These are read by: the interviewer during every interview, the persona generator
 
 **Ask the user which tier to use; never choose one silently.** Show them this table, name the tier you would pick and why, and wait. A 10× cost spread is not an implementation detail.
 
-Offer only tiers the organization's plan includes — the Plans column below is the gate, and selecting a tier outside it is refused with 403 at reservation time, not at creation. Infer the plan from `get_credit_balance`'s `base_limit` (15 Hobby, 100 Solo, 400 Pro, 1500 Team) or ask. On Hobby there is nothing to ask about: `open_weights` is the only tier, so say so rather than presenting a choice that does not exist.
+Offer only the tiers in `get_credit_balance`'s `plan.model_tiers` — the Plans column below is the gate. A tier outside it is accepted by `create_study` and `update_study` but is a blocking `model_not_on_plan` issue at publish and is refused with 403 when an interview starts, so the mistake surfaces late. Do not infer the plan from `base_limit` (`deutero-setup/references/plan-limits.md`). On Hobby there is nothing to ask about: `open_weights` is the only tier, so say so rather than presenting a choice that does not exist.
 
 Credits are Deutero's unit of compute. Rates are per five interview questions.
 
@@ -108,11 +108,11 @@ Every tier reads images; image questions (`present_images`, `image_upload`) are 
 
 Multipliers: **simulated interviews cost 2×** the live rate and are unavailable on Hobby. **Thematic analysis with deliverables costs 2×**, charged per interview analysed at the study's per-five-question rate.
 
-Modalities are plan-gated before they are priced: **voice needs a paid plan (Solo and up)**, **video and WhatsApp need Pro or Team**, and **Hobby is text chat only**. Enabling a modality the plan does not cover fails when a participant tries to use it, not when you set the flag, so check the plan rather than the toggle.
+Voice comes in two kinds, set with `voice_engine`: **on-device** (`"local"`: speech runs in the participant's browser, priced as chat, **every plan including Hobby**) and **cloud** (`"cloud"`: server speech, the +1 credit voice surcharge below, **Solo and up**). **Video and WhatsApp need Pro or Team.** Offer only what is in `get_credit_balance`'s `plan.interview_modalities` (`text`, `voice_local`, `voice_cloud`, `video`): `create_study` and `update_study` refuse anything outside it with 403 `upgrade_required` (switching off, or moving to on-device voice, always works). Omitting `voice_engine` gives cloud where the plan has it, else on-device. On Hobby, voice means on-device voice; leave video off and do not raise it as an option.
 
-Voice and video add a surcharge on top of the base rate, charged once per interview: **voice +1 credit flat**, **video +1 credit per started 5 minutes** with a 1-credit minimum, billed on completion against actual length. Text chat carries no surcharge. A participant who switches modality mid-interview is charged where the time was spent, voice and video are never billed together (the larger wins, since video includes its audio), and a switch that the balance cannot cover leaves the interview running in its current modality rather than cutting it short.
+Cloud voice and video add a surcharge on top of the base rate, charged once per interview (on-device voice adds nothing): **cloud voice +1 credit flat**, **video +1 credit per started 5 minutes** with a 1-credit minimum, billed on completion against actual length. Text chat carries no surcharge. A participant who switches modality mid-interview is charged where the time was spent, voice and video are never billed together (the larger wins, since video includes its audio), and a switch that the balance cannot cover leaves the interview running in its current modality rather than cutting it short.
 
-Call `get_credit_balance` before committing to a plan of work, and say the number out loud to the user when it is tight. Its `base_limit` also tells you which plan you are on; `deutero-setup/references/plan-limits.md` has the full feature matrix.
+Call `get_credit_balance` before committing to a plan of work, and say the number out loud to the user when it is tight. Its `plan` block tells you which plan you are on and what it allows; `deutero-setup/references/plan-limits.md` has the full feature matrix.
 
 ## Delivery settings
 
@@ -120,6 +120,7 @@ Set with `update_study` (or on the Details page):
 
 - **max_responses** — the quota. When completed interviews reach it, the study's status becomes `closed` and it stops holding an open-study slot. Raise it and `publish_study` again to collect more. `update_recruitment` can also set it; `clear_max_responses: true` removes it. Editable while the study is open.
 - **voice_enabled / video_enabled** — which modalities participants may use. Enabling them exposes extra participation URLs.
+- **voice_engine** — `local` (on-device, priced as chat, every plan) or `cloud` (server speech, +1 credit, Solo and up). Read only when voice is on.
 - **redirect_url** — where participants land after finishing. Essential with a paid panel.
 - **Session recording** — off by default.
 

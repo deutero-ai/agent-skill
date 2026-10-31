@@ -117,7 +117,7 @@ Segment: filed a ticket on the flow within the window. You have their ticket, so
 
 ## 5. Unexpected power use
 
-Segment: top decile on some usage dimension, or firing events in an order nobody designed. Small n, high value — recommend the premium tier here, since the probing is the whole product, and let the user make the call. Premium needs a Pro or Team plan; below that, `standard` with much fuller guidance.
+Segment: top decile on some usage dimension, or firing events in an order nobody designed. Small n, high value — recommend the best tier in `plan.model_tiers` (premium on Pro and Team, `standard` on Solo), since the probing is the whole product, and let the user make the call. On Hobby it runs on `open_weights`: write much fuller guidance for every question.
 
 **Q1 — the job (text, 4 turns)**
 

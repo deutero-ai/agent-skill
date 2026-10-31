@@ -8,11 +8,11 @@ Everything mechanical — tool sequence, question type config, guidance writing,
 create_study {"project_id": "…", "name": "Agent check-in — <date>",
               "survey_type": "customer_development",
               "research_question": "…", "objectives": "…", "target_population": "…",
-              "model_tier": "premium", "max_responses": 1, "anonymous": true}
+              "model_tier": "<a tier from plan.model_tiers>", "max_responses": 1, "anonymous": true}
 set_welcome  {"study_id": "…", "message": "…", "consent": true}
 ```
 
-- **`model_tier` — ask, always.** Recommend `premium`: on a one-participant study the probing *is* the product, and a premium interview of a dozen questions costs a couple of dozen credits against a participant's time worth far more. But the tier is the user's choice on every study, so put the three rates in front of them and wait. `standard` is the sensible step down. Mind the plan gates: `premium` needs Pro or Team, `standard` needs Solo or above, and `open_weights` is all Hobby has — there you compensate with much more detailed guidance on every question.
+- **`model_tier` — ask, always, from the tiers the plan has** (`get_credit_balance` → `plan.model_tiers`; on Hobby that is `open_weights` only). Where the plan has it, recommend `premium`: on a one-participant study the probing *is* the product, and a premium interview of a dozen questions costs a couple of dozen credits against a participant's time worth far more. But the tier is the user's choice on every study, so put the rates of the plan's tiers in front of them and wait (on Hobby there is nothing to choose: say it runs on `open_weights`). `standard` is the sensible step down. Mind the plan gates: `premium` needs Pro or Team, `standard` needs Solo or above, and `open_weights` is all Hobby has — there you compensate with much more detailed guidance on every question.
 - **`max_responses: 1`** so a stray share cannot add a second respondent.
 - **`anonymous: true`** — there is no useful identity to record here.
 - **`consent: true`** whenever the answers will change persistent behavior, and say so in the welcome text rather than burying it.
@@ -21,9 +21,11 @@ set_welcome  {"study_id": "…", "message": "…", "consent": true}
 
 - **Screening and characteristics.** They gate and profile panel recruits. You know exactly who is answering.
 - **Clustering and thematic analysis.** Both are built for many participants and have nothing to say about one. Read the transcript.
-- **Simulation.** It tests an instrument against invented participants; here the instrument's whole value is that it is anchored to real incidents an invented participant does not have. The exception is a self-interview built as a branching flow, where one simulated run per branch is worth it to confirm the paths fire.
+- **Simulation.** It tests an instrument against invented participants; here the instrument's whole value is that it is anchored to real incidents an invented participant does not have. The exception, on Pro and Team, is a self-interview built as a branching flow, where one simulated run per branch is worth it to confirm the paths fire.
 
 ## Extraction, and when it is worth it
+
+**Pro and Team only** — skip this section when `plan.interview_flow` is false; a closing question whose guidance asks the participant to confirm each rule in their own words does a lighter version on the linear list.
 
 In graph mode, an `extract` node forces the interviewer to resolve an answer into a typed value *during* the conversation, while the participant is still there to correct it. A transcript read afterwards has no such recourse. That is the argument for it at n=1 — not data capture, which reading already does.
 

@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.9.5
+
+Share a study as a "use this study" link: four new tools, `get_study_share_links`, `create_study_share`, `refresh_study_share` and `revoke_study_share` (100 tools).
+
+- A link shows a frozen snapshot of the study to anyone, or only to invited emails, and lets them copy it into their own account as a draft. The sharer's contact details, redirect, theme and flow webhook URLs are not copied. Sharing is not locked configuration, so it works while the study is open.
+- `create_study_share` takes `access` (`anyone` or `invited`) and, for `invited`, `emails`. Invitations are recorded but not emailed from the API: pass the returned `url` on yourself.
+- Edits to the study are not visible on a link until `refresh_study_share`; the URL stays the same. `revoke_study_share` is permanent.
+- Covered in `deutero-study-authoring/references/recruitment-and-embedding.md` (section 7).
+
+## 1.9.4
+
+Check the plan before designing; assume Hobby until you have.
+
+- `get_credit_balance` returns a `plan` block: `plan_tier`, `model_tiers` (the only tiers to offer), `interview_flow`, `image_questions`, `simulations`, `open_study_limit`, read from the gates the API enforces.
+- Every skill now reads the plan from that block instead of inferring it from `base_limit`, which complimentary and custom plans break (a Pro organization can show 100). Without the block, `get_publication_status` on an existing study gives `plan_tier`; with no study, treat the organization as Hobby. A remembered upgrade is trusted until a 403 `upgrade_required` contradicts it.
+- `deutero-interview-flow` checks the plan first and stops when `interview_flow` is false: no flow tools, the study goes on the linear list. `agent-self-interview` and `deutero-simulation` mention flows only on Pro and Team.
+- Model tier prompts offer only `plan.model_tiers`. On Hobby the study runs on `open_weights` with no choice offered. Examples no longer default to `premium` or `standard`; `question-patterns.md` no longer suggests `standard` on Hobby.
+- `study-fields.md`: a tier the plan lacks is accepted at creation but is a blocking `model_not_on_plan` at publish.
+- Interview modalities follow the pricing table. Voice comes in two kinds, set with the new `voice_engine` on `create_study` / `update_study` (returned by `get_study`): on-device (`local`, speech in the participant's browser, priced as chat, every plan) and cloud (`cloud`, server speech, +1 credit, Solo and up). Video and WhatsApp need Pro or Team. `plan` carries `interview_modalities` (`text`, `voice_local`, `voice_cloud`, `video`) and `whatsapp`. `create_study` and `update_study` refuse offering a modality outside the plan (403 `upgrade_required`; switching off or moving to on-device voice always works), publish blocks a study still offering one (`modality_not_on_plan`), and links for an off-plan modality are no longer returned.
+
+## 1.9.3
+
+New tool `report_feedback`: when no tool does what the task needs, a parameter is missing, results come back incomplete or a description misled you, report it before telling the user it cannot be done. It goes to the Deutero team (not the researcher or participants) and is free. `deutero-setup` says when to call it; `mcp-clients.md` lists it (96 tools).
+
+## 1.9.2
+
+- Every model tier reads images, open weights included; image questions are gated by plan (Solo and up), not by tier. `generate_questions` and the `create_question` / `update_question` `qtype` description no longer say an image question needs the standard or premium tier, and `deutero-study-authoring` says the same.
+
 ## 1.9.1
 
 - `study-fields.md`'s `survey_type` section lists all six types with what each is for and what the interviewer does, how to choose between the close ones (satisfaction vs UX, preferences vs customer development, satisfaction vs preferences), and that both customer types are for people who are, or were, customers.

@@ -13,7 +13,7 @@ The connection is the thing that quietly breaks work later, so settle it before 
 
 Call `health_health_get`, then `list_projects`. What comes back tells you where you are.
 
-- **Both succeed** — you are connected. Call `get_credit_balance` and go on to the real task.
+- **Both succeed** — you are connected. Call `get_credit_balance`, note the balance and its `plan` block, and go on to the real task.
 - **No Deutero tools exist at all** — the MCP server is not configured. Go to Step 3.
 - **401** — the client is configured but the credential is wrong, disabled or deleted. Regenerate or re-authorize (Step 3).
 - **403 with "Upgrade required"** — connected fine, but the plan does not cover the feature. Not a setup problem; report the plan the message names and continue with what the plan allows.
@@ -23,11 +23,11 @@ Call `health_health_get`, then `list_projects`. What comes back tells you where 
 
 Two separate limits decide what a user can do: the **credit balance** (how much work fits) and the **plan tier** (which features exist at all). A feature the plan does not cover is refused with 403 no matter how many credits are spare, so find out the plan first.
 
-`get_credit_balance` does not name the plan, but `base_limit` gives it away: **15 = Hobby, 100 = Solo, 400 = Pro, 1500 = Team**. Anything else means a custom package — ask. Asking the user outright is also fine and often faster.
+**Assume Hobby until you have checked.** It is where every new account lands, and most users are on it: **text chat and on-device voice only, on the `open_weights` model, 15 credits a month, linear question lists only (no Interview Flow), no simulations, no image questions, one open (published) study at a time.** That rules out much of what the other Deutero skills describe, and finding it out after authoring forty questions wastes the user's time.
 
-It matters most for Hobby, which is where every new account lands: **text chat interviews only, on the open-weights model, 15 credits a month, no simulations, no Interview Flow, no image questions, one open (published) study at a time.** That rules out most of what the other Deutero skills would otherwise reach for, and finding it out after authoring forty questions wastes the user's time.
+`get_credit_balance` returns a `plan` block: `plan_tier`, `model_tiers` (the only tiers you may offer), `interview_modalities` (`text`, `voice_local`, `voice_cloud`, `video`), `whatsapp`, `interview_flow`, `image_questions`, `simulations` and `open_study_limit`. Check it at the start of study work unless you hold a record that this organization upgraded and nothing has contradicted it since; a 403 `upgrade_required` means the record is stale. Do not infer the plan from `base_limit` — complimentary and custom plans break that mapping.
 
-`references/plan-limits.md` has the full matrix, how to detect the plan, and what to do instead at each gate. Read it before promising a user a feature.
+`references/plan-limits.md` has the full matrix, the fallback when `plan` is missing, and what to do instead at each gate. Read it before promising a user a feature.
 
 ## Step 2: Create an account, if there is none
 
@@ -77,6 +77,8 @@ These exist only in the dashboard, so plan around them rather than hunting for a
 - Billing, Chat with Data
 
 Clustering, transcript search, scale/options response summaries and webhook endpoints **are** available over MCP (and the SDK), and so is AI drafting of study details (`draft_study`, `draft_study_from_site`), interview questions (`generate_questions`) and the welcome text (`generate_welcome`), and publishing and pausing a study (`publish_study`, `pause_study`, `validate_study`, `get_publication_status`) and branding the interview pages (`get_theme`, `set_theme`, `upload_welcome_hero`) — over MCP and REST, not yet the SDK; see `deutero-study-authoring` and `deutero-participant-rewards`.
+
+When you hit something no tool does (a missing tool or parameter, results that came back incomplete, a description that misled you), call `report_feedback` before telling the user it cannot be done. It goes to the Deutero team, costs nothing, and is how gaps get closed.
 
 ## Keeping credentials safe
 

@@ -94,7 +94,7 @@ The key also works as `Authorization: Bearer <key>` — either header is fine.
 
 ## Tool inventory
 
-95 tools. Names are exact.
+100 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
 - **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
@@ -105,9 +105,11 @@ The key also works as `Authorization: Bearer <key>` — either header is fine.
 - **Questions** — `list_questions`, `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`, `upload_question_image`, `delete_question_image`
 - **Interview Flow** — `describe_graph_nodes`, `get_graph`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `activate_graph`, `deactivate_graph`, `get_flow_signals`, `upload_flow_image`
 - **Recruitment and embedding** — `get_recruitment`, `update_recruitment`, `list_embed_keys`, `create_embed_key`, `update_embed_key`, `get_embed_snippet`
+- **Sharing a study** — `get_study_share_links`, `create_study_share`, `refresh_study_share`, `revoke_study_share`
 - **Personas and simulation** — `list_personas`, `create_persona`, `update_persona`, `delete_persona`, `generate_personas`, `list_simulations`, `run_simulation`, `get_simulation`, `delete_simulation`
 - **Results** — `get_study_stats`, `list_interviews`, `find_interviews_by_external_id`, `get_interview`, `get_transcript`, `bulk_transcripts`, `search_transcripts`, `get_interview_fetches_and_signals`
 - **Participant contacts** — `list_study_contacts`, `get_interview_contact` (personal data; every read is audited)
 - **Analysis** — `list_analyzable_questions`, `get_scale_responses`, `get_options_responses`, `run_clustering`, `get_optimal_clusters`, `get_latest_clustering`
 - **Webhooks** — `list_webhook_event_types`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `rotate_webhook_secret`, `list_webhook_deliveries`
-- **Account** — `get_credit_balance`, `health_health_get`
+- **Account** — `get_credit_balance` (the balance, and the `plan` block: tier, allowed model tiers, Interview Flow, image questions, simulations, open-study limit), `health_health_get`
+- **Feedback** — `report_feedback` (tell the Deutero team what you could not do; free, never shown to participants)

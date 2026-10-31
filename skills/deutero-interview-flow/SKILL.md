@@ -1,15 +1,23 @@
 ---
 name: deutero-interview-flow
-description: Decide whether a Deutero study needs an Interview Flow — the branching graph mode where an interview routes on earlier answers instead of running a fixed list — and usually conclude it does not; then, when one is warranted, author, validate and activate it. Use this whenever someone proposes branching, conditional or follow-up questions, a different question set depending on what someone said, a loop over an unknown number of items, typed extraction of answers into variables, a fallback for thin answers, or a webhook or context fetch mid-interview; whenever someone assumes a flow is needed to record a participant's source, their ID or embed metadata (it is not); and whenever the user mentions the flow editor, graph mode, `check_graph`, `set_graph`, or a validator error like `dead_end`, `no_path_to_end`, `var_not_guaranteed` or `no_default`.
+description: Decide whether a Deutero study needs an Interview Flow — the branching graph mode where an interview routes on earlier answers instead of running a fixed list — and usually conclude it does not; check first that the plan includes it at all (Pro and Team only; Hobby, where new accounts start, and Solo do not); then, when one is warranted and available, author, validate and activate it. Use this whenever someone proposes branching, conditional or follow-up questions, a different question set depending on what someone said, a loop over an unknown number of items, typed extraction of answers into variables, a fallback for thin answers, or a webhook or context fetch mid-interview; whenever someone assumes a flow is needed to record a participant's source, their ID or embed metadata (it is not); and whenever the user mentions the flow editor, graph mode, `check_graph`, `set_graph`, or a validator error like `dead_end`, `no_path_to_end`, `var_not_guaranteed` or `no_default`.
 ---
 
 # Interview Flow
 
 A study runs either a linear question list or a **graph**. The graph routes on what was said: a block of questions that only applies if an earlier answer went a particular way, a loop over an unknown number of items, a value captured mid-conversation and piped into a later question.
 
-## First, decide whether you need one
+## Check the plan before anything else
 
-Usually you do not. Default to the linear question list: it carries every question type, private guidance, `follow_up`, `min_turns` and `max_turns`, it is far quicker to author and revise, and it cannot fail in the ways a flow can. A flow costs authoring time, validation cycles and a class of error the linear list cannot produce, so check the request against this table before proposing one. **None of these needs a flow:**
+Interview Flow is on the **Pro and Team plans only**, and most users — every new signup — are on Hobby. Call `get_credit_balance` and read `plan.interview_flow` before you propose, design or describe a flow, unless you hold a record that this organization upgraded and nothing has contradicted it since. If `plan` is missing from the response, use `get_publication_status`'s `plan_tier` on any existing study (`pro` and `team` have flow); with no study either, assume no flow. Never infer the plan from `base_limit`. `deutero-setup/references/plan-limits.md` has the full procedure.
+
+**When `interview_flow` is false, stop here.** Do not author one: `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `upload_flow_image` and `activate_graph` are refused with 403 `upgrade_required`, and `publish_study` refuses a study in graph mode with `flow_not_on_plan`. Tell the user once, plainly, that branching needs Pro or Team, then build the study on the linear question list with `deutero-study-authoring`. The table below shows how far that goes: most branching becomes question guidance. What the plan genuinely loses is hard routing between blocks, loops, piping and mid-interview calls; name those as the trade rather than pretending the linear list is equivalent.
+
+A study already in graph mode on a plan without flow (for example after a downgrade) can still be switched back: `deactivate_graph` works on any plan, and its question list is still there.
+
+## Then, decide whether you need one
+
+Even on Pro and Team, usually you do not. Default to the linear question list: it carries every question type, private guidance, `follow_up`, `min_turns` and `max_turns`, it is far quicker to author and revise, and it cannot fail in the ways a flow can. A flow costs authoring time, validation cycles and a class of error the linear list cannot produce, so check the request against this table before proposing one. **None of these needs a flow:**
 
 | Want | Use instead, on the linear list |
 |---|---|
@@ -43,12 +51,6 @@ If the request is a row of the table, say so, build it on the linear list, and d
 ### When a flow already exists and misbehaves
 
 A report of "branching issues", a step that seems to lead nowhere, or a path that asks the wrong people the wrong thing is a cue to run the test above again before repairing anything. If the flow fails it, rebuild the study on its question list (which is still there) and `deactivate_graph`; tell the user that is what you did and why. Repair the flow only if it passes.
-
-## Then, check the plan
-
-Interview Flow is a **Pro-and-above feature**. On Hobby and Solo every flow-authoring call — `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `upload_flow_image`, `activate_graph` — refuses with 403 and `detail.code: "upgrade_required"`, and `publish_study` refuses a study in graph mode with `flow_not_on_plan`. Establish the plan before designing a branching interview — `get_credit_balance`'s `base_limit` reads 400 on Pro and 1500 on Team (15 Hobby, 100 Solo), or ask the user.
-
-Below Pro, say so plainly and flatten the design into a linear question list. Most branches survive the flattening better than you would expect: ask the discriminating question, write each follow-up so it reads sensibly for everyone who reaches it, and let the interviewer's own probing adapt the rest. What you genuinely lose is hard routing, loops, piping and mid-interview calls — name those as the trade rather than pretending the linear list is equivalent.
 
 ## Read the registry before you author
 
