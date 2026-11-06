@@ -109,9 +109,9 @@ These are not 0.1's removed `studies.generate`. A study draft and a welcome draf
 | `set_welcome` with start-screen copy | `PUT /studies/{study_id}/welcome` |
 | `upload_welcome_hero` / `delete_welcome_hero` | `POST` / `DELETE /studies/{study_id}/welcome/hero` (`{"image_base64": "…", "alt": "…"}`) |
 
-`deutero-study-authoring/references/branding.md` has the fields and refusals.
+`plan-interview-research/references/branding.md` has the fields and refusals.
 
-A refusal comes back as a non-2xx whose JSON `detail.code` names the reason (`deutero-study-authoring/references/publishing.md`). In the SDK's error types, that's a `ConflictError` for `study_locked` on any locked write. A script that publishes should branch on the code, not on the status: 402 covers both `plan_limit_reached` and credits, and 409 covers both `credit_shortfall` and `validation_issues`. SDK 0.2's study models predate `status`, so if your version doesn't expose it, read it from `GET /studies/{study_id}` directly. Validation can take a minute, so size the timeout for it.
+A refusal comes back as a non-2xx whose JSON `detail.code` names the reason (`plan-interview-research/references/publishing.md`). In the SDK's error types, that's a `ConflictError` for `study_locked` on any locked write. A script that publishes should branch on the code, not on the status: 402 covers both `plan_limit_reached` and credits, and 409 covers both `credit_shortfall` and `validation_issues`. SDK 0.2's study models predate `status`, so if your version doesn't expose it, read it from `GET /studies/{study_id}` directly. Validation can take a minute, so size the timeout for it.
 
 The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, `search_transcripts` → `transcripts.search`, `list_analyzable_questions` → `analysis.list_questions`, `describe_graph_nodes` → `graph.describe_node_types`.
 
@@ -119,11 +119,11 @@ The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_tr
 
 - **`None` means "not sent".** An argument left as `None` is omitted from the request, so the server default applies, and on an `update` the field is left unchanged. You cannot clear a field by passing `None`; use the explicit clear flag where one exists (`clear_max_responses=True`).
 - **Responses are Pydantic models**, not dicts — `study.id`, `stats.completed_interviews`, `page.interviews`. `model_dump()` when you need a dict. IDs come back as `uuid.UUID`; every method accepts a `str` or a `UUID`.
-- **`qtype` is inferred when omitted**: `scale=` → scale, `options=` → choices, `slots=` → slots, `expected_image=` → image_upload, otherwise text. Name it anyway when it matters; an inferred type is a silent one. Field names inside configs are the API's (`{"minScale": 1, "maxScale": 5, …}`) — `deutero-study-authoring/references/question-types.md` has them.
+- **`qtype` is inferred when omitted**: `scale=` → scale, `options=` → choices, `slots=` → slots, `expected_image=` → image_upload, otherwise text. Name it anyway when it matters; an inferred type is a silent one. Field names inside configs are the API's (`{"minScale": 1, "maxScale": 5, …}`) — `plan-interview-research/references/question-types.md` has them.
 - **Flows and patch ops** take plain dicts in the API's JSON shape or the typed `FlowDocument` / `FlowNode` / `FlowEdge` / `PatchOp` models. On the models, the keywords `from` and `class` are `from_` and `class_`.
 - **Pagination is yours.** `interviews.list` returns `total`, `limit`, `offset` and one page (server default 50). A sweep loops on `offset` until it has `total` rows.
 - **Simulations run in the background.** `simulations.run` returns at once; poll `simulations.get(run.id)` while `status == "running"`, every 10 seconds or so.
-- **Enums** — `StudyType`, `ModelTier`, `NodeType`, `SearchMode`, `AnalysisCategory` — are importable from `deutero` and accepted wherever a string is. `ModelTier` is `open_weights` / `standard` / `premium`; there is no `FRONTIER` member (the API still accepts the string as an alias). The model tier is still the user's decision — `deutero-study-authoring` says why — so a script takes it as input rather than hard-coding one.
+- **Enums** — `StudyType`, `ModelTier`, `NodeType`, `SearchMode`, `AnalysisCategory` — are importable from `deutero` and accepted wherever a string is. `ModelTier` is `open_weights` / `standard` / `premium`; there is no `FRONTIER` member (the API still accepts the string as an alias). The model tier is still the user's decision — `plan-interview-research` says why — so a script takes it as input rather than hard-coding one.
 
 ## 4. Errors
 
@@ -180,7 +180,7 @@ if isinstance(event, InterviewCompletedEvent) and event.data.completed:
 - Timestamps more than 5 minutes from now are rejected; `tolerance=` changes that, `tolerance=None` disables it for replaying stored deliveries.
 - `webhooks.verify(...)` checks without parsing; `webhooks.sign(body, secret=, msg_id=)` builds valid headers for testing your receiver locally; `webhooks.parse_event` parses **without verifying** and belongs in tests only.
 
-`deutero-participant-rewards/references/webhook-events.md` has the payloads and the delivery semantics — one attempt, no retries — which the SDK does not change.
+`recruit-participants/references/webhook-events.md` has the payloads and the delivery semantics — one attempt, no retries — which the SDK does not change.
 
 ## 6. Things that catch people out
 

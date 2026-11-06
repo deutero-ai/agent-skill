@@ -46,15 +46,15 @@ hermes skills install deutero-ai/agent-skill/skills/deutero-setup
 | Skill | Use it for |
 |---|---|
 | [`deutero-setup`](deutero-interview-research/skills/deutero-setup/SKILL.md) | Signing up, connecting the MCP server by OAuth or API key, checking credits and plan limits, and the Python SDK for code that runs without an agent. **Start here** if tools are missing or return 401/403. |
-| [`deutero-study-authoring`](deutero-interview-research/skills/deutero-study-authoring/SKILL.md) | The hub: projects, study details, question types, welcome and consent, screening, recruitment links, the embed widget, reading results. |
-| [`deutero-product-research`](deutero-interview-research/skills/deutero-product-research/SKILL.md) | User research driven by product analytics: funnel drops, churn, feature adoption, support spikes. Works with any analytics platform. |
-| [`deutero-customer-development`](deutero-interview-research/skills/deutero-customer-development/SKILL.md) | Customer discovery and idea validation from a business idea, deck or plan: assumption mapping, problem interviews, willingness to pay, recruiting strangers. |
-| [`deutero-simulation`](deutero-interview-research/skills/deutero-simulation/SKILL.md) | Synthetic-persona dry runs that test the interview instrument, plus a straight answer on what simulated participants can and can't tell you. |
+| [`plan-interview-research`](deutero-interview-research/skills/plan-interview-research/SKILL.md) | The hub: projects, study details, question types, welcome and consent, screening, recruitment links, the embed widget, reading results. |
+| [`user-research`](deutero-interview-research/skills/user-research/SKILL.md) | User research driven by product analytics: funnel drops, churn, feature adoption, support spikes. Works with any analytics platform. |
+| [`idea-validation`](deutero-interview-research/skills/idea-validation/SKILL.md) | Customer discovery and idea validation from a business idea, deck or plan: assumption mapping, problem interviews, willingness to pay, recruiting strangers. |
+| [`simulate-users`](deutero-interview-research/skills/simulate-users/SKILL.md) | Synthetic-persona dry runs that test the interview instrument, plus a straight answer on what simulated participants can and can't tell you. |
 | [`deutero-interview-flow`](deutero-interview-research/skills/deutero-interview-flow/SKILL.md) | Branching and conditional interviews (graph mode), validator errors, and patterns that work. It also tells you when not to branch. |
-| [`deutero-participant-rewards`](deutero-interview-research/skills/deutero-participant-rewards/SKILL.md) | Incentives and payouts: external participant IDs, completion redirects, webhook verification, idempotent rewards, reconciliation. |
-| [`agent-self-interview`](deutero-interview-research/skills/agent-self-interview/SKILL.md) | An agent interviews its own user about how it should work, then proposes memory updates. |
+| [`recruit-participants`](deutero-interview-research/skills/recruit-participants/SKILL.md) | Incentives and payouts: external participant IDs, completion redirects, webhook verification, idempotent rewards, reconciliation. |
+| [`improve-agent`](deutero-interview-research/skills/improve-agent/SKILL.md) | An agent interviews its own user about how it should work, then proposes memory updates. |
 
-Each skill has a `references/` folder with detailed docs that load only when needed. Skills refer to each other's references by path (for example `deutero-study-authoring/references/question-types.md`), so install them together.
+Each skill has a `references/` folder with detailed docs that load only when needed. Skills refer to each other's references by path (for example `plan-interview-research/references/question-types.md`), so install them together.
 
 ---
 
@@ -149,7 +149,7 @@ The full inventory is in [`deutero-setup/references/mcp-clients.md`](deutero-int
 No. A survey collects fixed answers. Deutero runs a *conversation*: an AI moderator asks follow-up questions and probes vague answers the way a trained user researcher would. It still supports structured question types (scales, multiple choice, ranking) inside the interview when you need numbers.
 
 **Who are the participants?**
-Real people you recruit: your own users by email, link or in-product widget, or a population you screen for. AI personas exist only to test the interview before launch. The `deutero-simulation` skill is explicit that simulated answers aren't evidence about real users.
+Real people you recruit: your own users by email, link or in-product widget, or a population you screen for. AI personas exist only to test the interview before launch. The `simulate-users` skill is explicit that simulated answers aren't evidence about real users.
 
 **Which analytics tools does product research work with?**
 Any of them. The skill works from PostHog, Amplitude, Mixpanel, Google Analytics 4, Heap, a SQL or warehouse query, or a pasted CSV.

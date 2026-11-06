@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.10.0
+
+Skills renamed for discovery on skills.sh: traffic skills take the bare job name, only platform mechanics keep the `deutero-` prefix. No tool, parameter or behaviour changes.
+
+| Was | Now |
+|---|---|
+| `deutero-product-research` | `user-research` |
+| `deutero-study-authoring` | `plan-interview-research` |
+| `deutero-customer-development` | `idea-validation` |
+| `deutero-simulation` | `simulate-users` |
+| `deutero-participant-rewards` | `recruit-participants` |
+| `agent-self-interview` | `improve-agent` |
+| `deutero-setup`, `deutero-interview-flow` | unchanged |
+
+- Every renamed skill's description is rewritten as prose of 400–510 characters: what the agent can call, what it costs, what comes back. No trigger-phrase blocks. `deutero-setup` and `deutero-interview-flow` keep their old descriptions for now.
+- New `user-research/references/prototype-and-concept-tests.md`: prototype, screenshot and concept tests are a reference of `user-research`, not a skill of their own.
+- Cross-skill references use the new paths (`plan-interview-research/references/…`). Earlier changelog entries keep the names they shipped under.
+- Installs of an old slug keep working until the new ones are re-seeded by a telemetry install (`npx skills add`); reinstall under the new names.
+
 ## 1.9.5
 
 Share a study as a "use this study" link: four new tools, `get_study_share_links`, `create_study_share`, `refresh_study_share` and `revoke_study_share` (100 tools).

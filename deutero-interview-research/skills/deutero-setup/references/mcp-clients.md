@@ -85,11 +85,11 @@ The key also works as `Authorization: Bearer <key>` — either header is fine.
 | 402 | Out of credits. Check **Billing & Usage**; `get_credit_balance` reports the same number. On `publish_study`, read `detail.code`: `plan_limit_reached` is the open-study limit, not credits. |
 | 403 Upgrade required | Plan does not include the feature — simulations and Interview Flow on Hobby, graph mode below Pro, premium tier below Pro, image questions on Hobby, custom CSS below Pro. The message names the plan needed; see `plan-limits.md`. |
 | 403 on `set_theme` without `study_id` | Only an organization admin can set the organization's theme. Set a study's theme instead, or ask an admin. |
-| 422 `invalid_theme` | A theme value is not allowed or text would be unreadable; `detail.problems` lists each one. See `deutero-study-authoring/references/branding.md`. |
+| 422 `invalid_theme` | A theme value is not allowed or text would be unreadable; `detail.problems` lists each one. See `plan-interview-research/references/branding.md`. |
 | 404 on `/mcp/mcp` | URL must be exactly `/mcp`. |
 | 409 on `set_graph` / `patch_graph` | Someone edited the flow after you read it. Re-read `get_graph` and retry with the new `graph_version`. |
 | 409 `study_locked` | The study is open to participants, so its interview configuration is locked. With the user's go-ahead: `pause_study`, edit, `publish_study`. |
-| 409 / 422 on `publish_study` | A refusal with a `detail.code`. See `deutero-study-authoring/references/publishing.md`. |
+| 409 / 422 on `publish_study` | A refusal with a `detail.code`. See `plan-interview-research/references/publishing.md`. |
 | OAuth prompt never appears | Client does not support remote MCP authorization. Use an API key. |
 
 ## Tool inventory

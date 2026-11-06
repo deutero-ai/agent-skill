@@ -11,7 +11,7 @@ A study runs either a linear question list or a **graph**. The graph routes on w
 
 Interview Flow is on the **Pro and Team plans only**, and most users — every new signup — are on Hobby. Call `get_credit_balance` and read `plan.interview_flow` before you propose, design or describe a flow, unless you hold a record that this organization upgraded and nothing has contradicted it since. If `plan` is missing from the response, use `get_publication_status`'s `plan_tier` on any existing study (`pro` and `team` have flow); with no study either, assume no flow. Never infer the plan from `base_limit`. `deutero-setup/references/plan-limits.md` has the full procedure.
 
-**When `interview_flow` is false, stop here.** Do not author one: `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `upload_flow_image` and `activate_graph` are refused with 403 `upgrade_required`, and `publish_study` refuses a study in graph mode with `flow_not_on_plan`. Tell the user once, plainly, that branching needs Pro or Team, then build the study on the linear question list with `deutero-study-authoring`. The table below shows how far that goes: most branching becomes question guidance. What the plan genuinely loses is hard routing between blocks, loops, piping and mid-interview calls; name those as the trade rather than pretending the linear list is equivalent.
+**When `interview_flow` is false, stop here.** Do not author one: `describe_graph_nodes`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `upload_flow_image` and `activate_graph` are refused with 403 `upgrade_required`, and `publish_study` refuses a study in graph mode with `flow_not_on_plan`. Tell the user once, plainly, that branching needs Pro or Team, then build the study on the linear question list with `plan-interview-research`. The table below shows how far that goes: most branching becomes question guidance. What the plan genuinely loses is hard routing between blocks, loops, piping and mid-interview calls; name those as the trade rather than pretending the linear list is equivalent.
 
 A study already in graph mode on a plan without flow (for example after a downgrade) can still be switched back: `deactivate_graph` works on any plan, and its question list is still there.
 
@@ -30,10 +30,10 @@ Even on Pro and Team, usually you do not. Default to the linear question list: i
 | Keeping what people said when they drop out partway | nothing to build: every turn is saved as it happens, and an abandoned interview stays in `list_interviews` (`completed: false`), `get_transcript` and the analysis tallies. `output_var` is not a data-retention mechanism |
 | A few optional questions at the end | put them last and say they are optional; someone who stops there keeps everything they already said |
 | A "would you like to leave your email?" opt-in | one question whose guidance says to ask for the address only if they agree |
-| Rewarding, notifying or redirecting someone when they finish | the `interview.completed` webhook and `redirect_url` (`deutero-participant-rewards`) |
+| Rewarding, notifying or redirecting someone when they finish | the `interview.completed` webhook and `redirect_url` (`recruit-participants`) |
 | Structured answers to tally | the question type itself (`choices`, `scale`, `ranking`, …), read back with `get_options_responses` / `get_scale_responses` |
 
-Link parameters and embed metadata are covered in `deutero-study-authoring/references/recruitment-and-embedding.md`.
+Link parameters and embed metadata are covered in `plan-interview-research/references/recruitment-and-embedding.md`.
 
 The test for conditional logic: could a capable human interviewer handle it from a note on the question? If so, write the note. The interviewer reads every answer before deciding what to say next, and guidance tells it what to do with what it hears.
 
@@ -154,7 +154,7 @@ Then **read `warnings`**. A valid flow saves regardless, but each warning names 
 
 Saving does not switch the study into graph mode by itself — `activate_graph` does. `deactivate_graph` returns it to the linear list, which is still there.
 
-All of these writes are refused with 409 `study_locked` while the study is open to participants. Build and activate the flow on a draft, then publish. To revise a live flow, pause the study first (with the user's go-ahead, since pausing turns new participants away) and publish again after. Publishing refuses a graph study whose flow isn't active (`graph_not_active`). See `deutero-study-authoring/references/publishing.md`.
+All of these writes are refused with 409 `study_locked` while the study is open to participants. Build and activate the flow on a draft, then publish. To revise a live flow, pause the study first (with the user's go-ahead, since pausing turns new participants away) and publish again after. Publishing refuses a graph study whose flow isn't active (`graph_not_active`). See `plan-interview-research/references/publishing.md`.
 
 Pass `expected_graph_version` from your last `get_graph` so a browser edit made meanwhile is refused with a 409 rather than silently overwritten. Prefer `patch_graph` over `set_graph` when revising a flow the user has since rearranged in the editor — it preserves positions and their layout.
 
@@ -170,7 +170,7 @@ Pass `expected_graph_version` from your last `get_graph` so a browser edit made 
 
 ## Testing a flow
 
-A branching interview has paths that never run in ordinary testing. Simulate it: write one persona per path, run them, and read the transcripts to check each branch fired. See the `deutero-simulation` skill — this is the case where simulation is most obviously worth its credits.
+A branching interview has paths that never run in ordinary testing. Simulate it: write one persona per path, run them, and read the transcripts to check each branch fired. See the `simulate-users` skill — this is the case where simulation is most obviously worth its credits.
 
 ## References
 

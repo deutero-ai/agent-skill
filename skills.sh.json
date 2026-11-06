@@ -7,31 +7,31 @@
       "description": "Connect an agent to Deutero, then author a study end to end.",
       "skills": [
         "deutero-setup",
-        "deutero-study-authoring"
+        "plan-interview-research"
       ]
     },
     {
       "title": "Research",
-      "description": "Turn analytics, product context or a business idea into interviews with real people.",
+      "description": "User research and idea validation: turn analytics, product context or a business idea into interviews with real people.",
       "skills": [
-        "deutero-product-research",
-        "deutero-customer-development"
+        "user-research",
+        "idea-validation"
       ]
     },
     {
       "title": "Flows and rewards",
-      "description": "Branching interview flows, and paying participants off the completion webhook.",
+      "description": "Branching interview flows, and recruiting and paying participants off the completion webhook.",
       "skills": [
         "deutero-interview-flow",
-        "deutero-participant-rewards"
+        "recruit-participants"
       ]
     },
     {
       "title": "Test and improve",
-      "description": "Pilot a study on simulated personas, and let an agent interview its own principal.",
+      "description": "Pilot a study on simulated users, and let an agent interview its own principal to improve.",
       "skills": [
-        "deutero-simulation",
-        "agent-self-interview"
+        "simulate-users",
+        "improve-agent"
       ]
     }
   ]

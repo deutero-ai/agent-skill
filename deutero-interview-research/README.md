@@ -23,15 +23,15 @@ MCP is for an agent in a session. Code that runs on its own — a webhook receiv
 | Skill | For |
 |---|---|
 | `deutero-setup` | Account creation, OAuth or API key, connection and plan checks, and the Python SDK. Start here when tools are missing or returning 401/403. |
-| `deutero-study-authoring` | The mechanics: project, study details, question types, guidance, welcome, screening, recruitment, branding the interview pages, publishing, results. The hub the others build on. |
-| `deutero-product-research` | Studies driven by analytics and product context — a funnel drop, a churn cohort, a dead feature. Platform-agnostic; covers in-product embedding and recruitment copy. |
-| `deutero-customer-development` | Discovery studies from a business idea, deck or plan. Assumption extraction, questions about the past, finding a population you have no list of. |
-| `deutero-simulation` | Testing a study against AI personas before spending real participants on it. |
+| `plan-interview-research` | The mechanics: project, study details, question types, guidance, welcome, screening, recruitment, branding the interview pages, publishing, results. The hub the others build on. |
+| `user-research` | User research studies driven by analytics and product context — a funnel drop, a churn cohort, a dead feature — plus prototype and concept tests. Platform-agnostic; covers in-product embedding and recruitment copy. |
+| `idea-validation` | Startup and product idea validation: discovery studies from a business idea, deck or plan. Assumption extraction, questions about the past, finding a population you have no list of. |
+| `simulate-users` | Testing a study against AI personas before spending real participants on it. |
 | `deutero-interview-flow` | Branching interviews: whether you need one (usually not), the graph mode, its validator, and the patterns worth using. |
-| `deutero-participant-rewards` | Making a finished interview *do* something: tagging participants with your own ID, the `interview.completed` webhook, paying exactly once, reconciling misses. |
-| `agent-self-interview` | An agent eliciting its own operating preferences from its principal, and turning the answers into proposed memory changes. |
+| `recruit-participants` | Making a finished interview *do* something: tagging participants with your own ID, the `interview.completed` webhook, paying exactly once, reconciling misses. |
+| `improve-agent` | An agent eliciting its own operating preferences from its principal, and turning the answers into proposed memory changes. |
 
-`deutero-study-authoring` holds the shared references; the topic skills decide *what* to ask and hand the building to it. References are addressed across skills by plugin-relative path, e.g. `deutero-study-authoring/references/question-types.md`.
+`plan-interview-research` holds the shared references; the topic skills decide *what* to ask and hand the building to it. References are addressed across skills by plugin-relative path, e.g. `plan-interview-research/references/question-types.md`.
 
 ## Not covered over MCP
 
