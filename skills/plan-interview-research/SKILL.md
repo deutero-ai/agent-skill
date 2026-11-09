@@ -1,6 +1,6 @@
 ---
 name: plan-interview-research
-description: Plan and build interview research on Deutero over MCP or the Python SDK: write the interview guide, pick question types, set screening and consent, brand the participant pages, publish or pause, and read results back as transcripts, tallies and quotes. This is the mechanical reference under the other skills, which decide what to ask. It turns a research goal, survey draft or topic list into an AI-conducted interview,.
+description: "Plan and build interview research on Deutero over MCP or the Python SDK: write the interview guide, pick question types, set screening and consent, brand the participant pages, publish or pause, and read results back as transcripts, tallies and quotes. This is the mechanical reference under the other skills, which decide what to ask. It turns a research goal, survey draft or topic list into an AI-conducted interview."
 ---
 
 # Authoring a Deutero study

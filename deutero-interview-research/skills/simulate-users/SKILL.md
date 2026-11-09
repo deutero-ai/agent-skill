@@ -1,6 +1,6 @@
 ---
 name: simulate-users
-description: Pilot an interview study on simulated users before spending real participants. Write or generate AI personas, run them against a Deutero study through MCP, poll the runs and read the transcripts for broken questions, leading wording, branches that never fire, interview length and cost. Simulations need Solo or above. They test the instrument, not the market: simulated participants are not evidence about real people, and the skill says where that line sits.
+description: "Pilot an interview study on simulated users before spending real participants. Write or generate AI personas, run them against a Deutero study through MCP, poll the runs and read the transcripts for broken questions, leading wording, branches that never fire, interview length and cost. Simulations need Solo or above. They test the instrument, not the market: simulated participants are not evidence about real people, and the skill says where that line sits."
 ---
 
 # Simulation with personas
