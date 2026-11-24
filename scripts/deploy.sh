@@ -25,11 +25,10 @@ while getopts "nym:s:h" opt; do
 done
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
-DEST="$REPO/deutero-interview-research"
 MANIFESTS=(
   "$REPO/.claude-plugin/marketplace.json"
-  "$DEST/.claude-plugin/plugin.json"
-  "$DEST/plugin.json"
+  "$REPO/.claude-plugin/plugin.json"
+  "$REPO/plugin.json"
 )
 
 die() { echo "error: $*" >&2; exit 1; }
@@ -47,26 +46,19 @@ if [[ -n "$SRC_REPO" && -n "$(git -C "$SRC_REPO" status --porcelain -- "$SRC")" 
   echo "warning: $SRC has uncommitted changes in the dashboard repo" >&2
 fi
 
-OLD_VERSION="$(jq -r .version "$DEST/plugin.json")"
+OLD_VERSION="$(jq -r .version "$REPO/plugin.json")"
 NEW_VERSION="$(sed -n 's/^## \([0-9][0-9.]*\).*/\1/p' "$SRC/CHANGELOG.md" | head -1)"
 [[ -n "$NEW_VERSION" ]] || die "no version heading in $SRC/CHANGELOG.md"
 
-# No --delete: this repo's manifests (plugin.json, mcp.json, .claude-plugin/)
-# don't exist in the dashboard copy and must survive the sync.
-rsync -a \
-  --exclude .DS_Store \
-  --exclude plugin.json \
-  --exclude mcp.json \
-  --exclude .claude-plugin/ \
-  "$SRC/" "$DEST/"
-
-# The repo root also carries skills/<name>/ so `hermes skills tap add deutero-ai/agent-skill`
-# works — TapsManager hardcodes the tap path to "skills/" and walks one level under it — and so
-# skills.sh lists the skills at their bare slugs. Same source, same commit, so the copies cannot
-# drift; --delete keeps it a strict mirror.
+# The repo root is the plugin (marketplace source "./"), so there is a single skills/ tree.
+# It sits at the root because Hermes' TapsManager hardcodes the tap path to "skills/" and
+# skills.sh lists skills at their bare slugs; keeping one copy means tools that search the
+# whole repo don't find two skills with the same name. --delete keeps it a strict mirror of
+# the dashboard source. The dashboard README is not synced: the root README is this repo's own.
 rsync -a --delete \
   --exclude .DS_Store \
   "$SRC/skills/" "$REPO/skills/"
+cp "$SRC/CHANGELOG.md" "$REPO/CHANGELOG.md"
 
 for f in "${MANIFESTS[@]}"; do
   sed -i '' -E "s/(\"version\": *)\"[^\"]*\"/\1\"$NEW_VERSION\"/" "$f"
@@ -74,7 +66,7 @@ done
 
 # Keep the root README's tool count in step with the inventory.
 TOOL_COUNT="$(sed -n 's/^\([0-9][0-9]*\) tools\..*/\1/p' \
-  "$DEST/skills/deutero-setup/references/mcp-clients.md" | head -1)"
+  "$REPO/skills/deutero-setup/references/mcp-clients.md" | head -1)"
 if [[ -n "$TOOL_COUNT" ]]; then
   sed -i '' -E "s/It has [0-9]+ tools/It has $TOOL_COUNT tools/" "$REPO/README.md"
 fi
@@ -102,7 +94,7 @@ fi
 BODY="$(awk -v old="## $OLD_VERSION" '
   index($0, old) == 1 { exit }
   /^## / { started = 1 }
-  started' "$DEST/CHANGELOG.md")"
+  started' "$REPO/CHANGELOG.md")"
 git commit --quiet -m "${SUBJECT:-Sync skills to $NEW_VERSION}" -m "$BODY"
 git log -1 --stat --format='%h %s'
 

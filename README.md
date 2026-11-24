@@ -45,14 +45,14 @@ hermes skills install deutero-ai/agent-skill/skills/deutero-setup
 
 | Skill | Use it for |
 |---|---|
-| [`deutero-setup`](deutero-interview-research/skills/deutero-setup/SKILL.md) | Signing up, connecting the MCP server by OAuth or API key, checking credits and plan limits, and the Python SDK for code that runs without an agent. **Start here** if tools are missing or return 401/403. |
-| [`plan-interview-research`](deutero-interview-research/skills/plan-interview-research/SKILL.md) | The hub: projects, study details, question types, welcome and consent, screening, recruitment links, the embed widget, reading results. |
-| [`user-research`](deutero-interview-research/skills/user-research/SKILL.md) | User research driven by product analytics: funnel drops, churn, feature adoption, support spikes. Works with any analytics platform. |
-| [`idea-validation`](deutero-interview-research/skills/idea-validation/SKILL.md) | Customer discovery and idea validation from a business idea, deck or plan: assumption mapping, problem interviews, willingness to pay, recruiting strangers. |
-| [`simulate-users`](deutero-interview-research/skills/simulate-users/SKILL.md) | Synthetic-persona dry runs that test the interview instrument, plus a straight answer on what simulated participants can and can't tell you. |
-| [`deutero-interview-flow`](deutero-interview-research/skills/deutero-interview-flow/SKILL.md) | Branching and conditional interviews (graph mode), validator errors, and patterns that work. It also tells you when not to branch. |
-| [`recruit-participants`](deutero-interview-research/skills/recruit-participants/SKILL.md) | Incentives and payouts: external participant IDs, completion redirects, webhook verification, idempotent rewards, reconciliation. |
-| [`improve-agent`](deutero-interview-research/skills/improve-agent/SKILL.md) | An agent interviews its own user about how it should work, then proposes memory updates. |
+| [`deutero-setup`](skills/deutero-setup/SKILL.md) | Signing up, connecting the MCP server by OAuth or API key, checking credits and plan limits, and the Python SDK for code that runs without an agent. **Start here** if tools are missing or return 401/403. |
+| [`plan-interview-research`](skills/plan-interview-research/SKILL.md) | The hub: projects, study details, question types, welcome and consent, screening, recruitment links, the embed widget, reading results. |
+| [`user-research`](skills/user-research/SKILL.md) | User research driven by product analytics: funnel drops, churn, feature adoption, support spikes. Works with any analytics platform. |
+| [`idea-validation`](skills/idea-validation/SKILL.md) | Customer discovery and idea validation from a business idea, deck or plan: assumption mapping, problem interviews, willingness to pay, recruiting strangers. |
+| [`simulate-users`](skills/simulate-users/SKILL.md) | Synthetic-persona dry runs that test the interview instrument, plus a straight answer on what simulated participants can and can't tell you. |
+| [`deutero-interview-flow`](skills/deutero-interview-flow/SKILL.md) | Branching and conditional interviews (graph mode), validator errors, and patterns that work. It also tells you when not to branch. |
+| [`recruit-participants`](skills/recruit-participants/SKILL.md) | Incentives and payouts: external participant IDs, completion redirects, webhook verification, idempotent rewards, reconciliation. |
+| [`improve-agent`](skills/improve-agent/SKILL.md) | An agent interviews its own user about how it should work, then proposes memory updates. |
 
 Each skill has a `references/` folder with detailed docs that load only when needed. Skills refer to each other's references by path (for example `plan-interview-research/references/question-types.md`), so install them together.
 
@@ -83,7 +83,7 @@ openskills installs the skills only. It doesn't configure MCP, so add the server
 
 ### Option 3: Any Agent Plugins client
 
-Point the client at [`deutero-interview-research/`](deutero-interview-research). It finds the skills in `skills/` and the MCP server in `mcp.json`.
+Point the client at the repository root. It finds the skills in `skills/`, the manifest in `plugin.json` and the MCP server in `mcp.json`.
 
 ### Connect the Deutero MCP server
 
@@ -141,7 +141,7 @@ No account yet? Sign up at [dashboard.deutero.ai/login](https://dashboard.deuter
 | Webhooks & rewards | `create_webhook`, `rotate_webhook_secret`, `list_webhook_deliveries`, `find_interviews_by_external_id` |
 | Account | `get_credit_balance`, `health_health_get` |
 
-The full inventory is in [`deutero-setup/references/mcp-clients.md`](deutero-interview-research/skills/deutero-setup/references/mcp-clients.md).
+The full inventory is in [`deutero-setup/references/mcp-clients.md`](skills/deutero-setup/references/mcp-clients.md).
 
 ---
 
@@ -157,7 +157,7 @@ Real people you recruit: your own users by email, link or in-product widget, or 
 Any of them. The skill works from PostHog, Amplitude, Mixpanel, Google Analytics 4, Heap, a SQL or warehouse query, or a pasted CSV.
 
 **Does my plan matter?**
-Some features are plan-gated. Simulations and image questions need Solo or above, and branching Interview Flow needs Pro or above. The skills detect your plan and offer a fallback instead of failing. The details are in [`plan-limits.md`](deutero-interview-research/skills/deutero-setup/references/plan-limits.md).
+Some features are plan-gated. Simulations and image questions need Solo or above, and branching Interview Flow needs Pro or above. The skills detect your plan and offer a fallback instead of failing. The details are in [`plan-limits.md`](skills/deutero-setup/references/plan-limits.md).
 
 **What isn't available to agents?**
 Prolific recruitment, the Slack and Discord connectors, billing (including topping up when a publish is refused for credits), Chat with Data, and the **Preview** link for trying a draft yourself are dashboard-only. The skills say so where it matters.
@@ -169,14 +169,17 @@ Yes. Every MCP tool is a REST route at `https://dashboard.deutero.ai/study-api/a
 
 ## Repository layout
 
+The repository root is the plugin. There is one copy of each skill.
+
 ```
-.claude-plugin/marketplace.json        Claude Code marketplace ("deutero")
-deutero-interview-research/            The plugin
-  .claude-plugin/plugin.json           Claude Code plugin manifest (+ MCP server)
-  plugin.json, mcp.json                Agent Plugins manifest and MCP declaration
-  skills/<skill>/SKILL.md              One folder per skill (openskills discovers these)
-  skills/<skill>/references/*.md       Loaded on demand
-  CHANGELOG.md
+.claude-plugin/marketplace.json        Claude Code marketplace ("deutero"), source "./"
+.claude-plugin/plugin.json             Claude Code plugin manifest (+ MCP server)
+plugin.json, mcp.json                  Agent Plugins manifest and MCP declaration
+skills/<skill>/SKILL.md                One folder per skill (openskills, Hermes and skills.sh discover these)
+skills/<skill>/references/*.md         Loaded on demand
+skills.sh.json                         Skill groupings for the skills.sh repo page
+CHANGELOG.md
+scripts/deploy.sh                      Syncs skills and CHANGELOG from the dashboard repo
 ```
 
 ## Links
@@ -184,7 +187,7 @@ deutero-interview-research/            The plugin
 - Website: [deutero.ai](https://deutero.ai)
 - Dashboard and help: [dashboard.deutero.ai/help](https://dashboard.deutero.ai/help)
 - REST API docs: [dashboard.deutero.ai/study-api/api/v1/docs](https://dashboard.deutero.ai/study-api/api/v1/docs)
-- Changelog: [CHANGELOG.md](deutero-interview-research/CHANGELOG.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
