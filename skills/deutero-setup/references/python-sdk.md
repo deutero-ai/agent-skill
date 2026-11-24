@@ -40,7 +40,7 @@ Use either as a context manager (or call `close()`) so the connection pool is re
 
 ## 2. MCP tool → SDK method
 
-Every MCP tool — except the four generators and the four publication tools listed after the table — is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
+Every MCP tool in the table below is one SDK method with the same parameters, spelled as Python keyword arguments. IDs are positional; everything else is keyword-only.
 
 | MCP tool | SDK |
 |---|---|
@@ -64,6 +64,8 @@ Every MCP tool — except the four generators and the four publication tools lis
 | `run_clustering` / `get_optimal_clusters` / `get_latest_clustering` | `client.analysis.cluster(id, question_id=, n_clusters=)` / `.get_optimal_clusters(id, question_id=)` / `.get_latest_clustering(id)` |
 | `list_webhook_event_types` / `list_webhooks` / `create_webhook` / `update_webhook` / `delete_webhook` / `rotate_webhook_secret` / `list_webhook_deliveries` | `client.webhooks.list_event_types()` / `.list()` / `.create(label=, url=, events=)` / `.update(wid, …)` / `.delete(wid)` / `.rotate_secret(wid)` / `.list_deliveries(wid, event_type=, success=, …)` |
 | `get_credit_balance` / `health_health_get` | `client.credits.get_balance()` / `client.health()` |
+
+Every tool not in that table was added after SDK 0.2 shipped and has no method yet. From code, call its REST route with the same `X-API-Key`, under `https://dashboard.deutero.ai/study-api/api/v1`. The JSON body takes the tool's parameters by the same names; the tables below give each route.
 
 **Not in 0.2 yet: the generators.** `draft_study`, `draft_study_from_site`, `generate_questions` and `generate_welcome` were added to the API after SDK 0.2 shipped, so they have no method. From code, call the REST routes directly with the same `X-API-Key`, under `https://dashboard.deutero.ai/study-api/api/v1`:
 
@@ -112,6 +114,62 @@ These are not 0.1's removed `studies.generate`. A study draft and a welcome draf
 `plan-interview-research/references/branding.md` has the fields and refusals.
 
 A refusal comes back as a non-2xx whose JSON `detail.code` names the reason (`plan-interview-research/references/publishing.md`). In the SDK's error types, that's a `ConflictError` for `study_locked` on any locked write. A script that publishes should branch on the code, not on the status: 402 covers both `plan_limit_reached` and credits, and 409 covers both `credit_shortfall` and `validation_issues`. SDK 0.2's study models predate `status`, so if your version doesn't expose it, read it from `GET /studies/{study_id}` directly. Validation can take a minute, so size the timeout for it.
+
+**Not in 0.2 yet: bulk creates.** One atomic call instead of a run of single creates; if one question is invalid, none is saved.
+
+| MCP tool | REST |
+|---|---|
+| `create_questions` | `POST /studies/{study_id}/questions/batch` (`{"questions": [ … ]}`, up to 50) |
+| `create_screening_questions` | `POST /studies/{study_id}/screening/questions/batch` (`{"questions": [ … ]}`, up to 20) |
+
+**Not in 0.2 yet: sharing a study.** The "use this study" links (`plan-interview-research/references/recruitment-and-embedding.md`, section 7):
+
+| MCP tool | REST |
+|---|---|
+| `get_study_share_links` | `GET /studies/{study_id}/share-links` |
+| `create_study_share` | `POST /studies/{study_id}/share-links` (`access` `anyone` or `invited`; `emails` for `invited`) |
+| `refresh_study_share` / `revoke_study_share` | `POST /studies/{study_id}/share-links/{share_id}/refresh` / `…/revoke` |
+
+**Not in 0.2 yet: recordings, quotes and clips.** `plan-interview-research/references/recordings-and-clips.md` has the locators, formats and error codes. A download or export is a job: poll `GET /downloads/{download_id}` or `GET /media-exports/{export_id}` until it is ready, then fetch its `url` with the same key. The link works only with the requester's credentials, so a script cannot hand it to someone else.
+
+| MCP tool | REST |
+|---|---|
+| `get_transcript` with timings | `GET /interviews/{interview_id}/transcript?include_timings=true` |
+| `get_interview_recording` | `GET /interviews/{interview_id}/recording` |
+| `find_quotes` | `GET /studies/{study_id}/quotes?q=&mode=&interview_id=&limit=` |
+| `create_clip` | `POST /interviews/{interview_id}/clips` |
+| `create_clip_from_quote` | `POST /studies/{study_id}/clips` |
+| `list_clips` | `GET /studies/{study_id}/clips?interview_id=&external_participant_id=&tag=&created_by=&q=&has_video=&limit=&offset=` |
+| `get_clip` / `update_clip` / `delete_clip` | `GET` / `PATCH` / `DELETE /clips/{clip_id}` |
+| `download_clip` | `POST /clips/{clip_id}/downloads` |
+| `download_interview_recording` | `POST /interviews/{interview_id}/recording/downloads` |
+| `get_download` | `GET /downloads/{download_id}` |
+| `export_media` / `list_media_exports` | `POST` / `GET /studies/{study_id}/media-exports` |
+| `get_media_export` | `GET /media-exports/{export_id}` |
+
+**Not in 0.2 yet: thematic analysis.** 0.1's `client.analysis.run` is not this; it called an API that no longer exists. `plan-interview-research/references/reading-results.md` covers when to read the report and how to run it.
+
+| MCP tool | REST |
+|---|---|
+| `get_study_themes` | `GET /studies/{study_id}/themes` |
+| `get_interview_themes` | `GET /interviews/{interview_id}/themes` |
+| `get_study_codebook` | `GET /studies/{study_id}/codebook` |
+| `list_interview_analyses` | `GET /studies/{study_id}/interview-analyses?status=&interview_ids=&limit=&offset=` |
+| `run_interview_analysis` | `POST /studies/{study_id}/interview-analyses` (`interview_ids`, optional `model_tier`, `rerun`, `acknowledge_credits`) |
+| `get_study_analysis_options` | `GET /studies/{study_id}/study-analysis-options` |
+| `run_study_analysis` / `list_study_analyses` | `POST` / `GET /studies/{study_id}/study-analyses` |
+| `get_study_analysis` | `GET /studies/{study_id}/study-analyses/{run_id}` |
+| `retry_study_analysis` | `POST /studies/{study_id}/study-analyses/{run_id}/retry` |
+| `edit_study_report` | `POST /studies/{study_id}/study-analyses/{run_id}/edits` |
+| `consolidate_codebook` | `POST /studies/{study_id}/codebook/consolidate` |
+| `update_code` | `PATCH /studies/{study_id}/codebook/codes/{code_ref}` |
+| `merge_codes` | `POST /studies/{study_id}/codebook/codes/{code_ref}/merge` |
+| `get_report_share_links` / `create_report_share` | `GET` / `POST /studies/{study_id}/report-links` |
+| `refresh_report_share` / `revoke_report_share` | `POST /studies/{study_id}/report-links/{report_id}/refresh` / `…/revoke` |
+
+Analysis runs cost credits. The first `POST` is refused 409 `credit_confirmation_required` with `estimated_credits` in `detail`; a script resends with `acknowledge_credits` set to that figure. That figure is the budget the person running the script agreed to. Take it as input, the way a script takes the model tier, rather than echoing back whatever the server quotes. The same applies to `create_report_share`'s `acknowledge_simulated_mix` / `acknowledge_real_quotes`: each needs a person's decision, so a script should not set them on its own.
+
+**Not in 0.2 yet: feedback.** `report_feedback` is `POST /feedback` (`what_i_needed`, `what_i_tried`, `gap_type`).
 
 The renames worth remembering: `run_clustering` → `analysis.cluster`, `bulk_transcripts` → `transcripts.list`, `search_transcripts` → `transcripts.search`, `list_analyzable_questions` → `analysis.list_questions`, `describe_graph_nodes` → `graph.describe_node_types`.
 

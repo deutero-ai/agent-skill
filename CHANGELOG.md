@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.13.1
+
+No new tools (134 in all). Every tool now has a route from code.
+
+- `deutero-setup/references/python-sdk.md` gives the REST route for each of the 39 tools added since SDK 0.2: the bulk creates, study shares, recordings, quotes and clips, thematic analysis results and runs, and `report_feedback`. Scripts that run analyses take the credit budget as input and send it as `acknowledge_credits`. A script never sets the report share's acknowledgements on its own.
+- `list_interview_analyses` takes `interview_ids` (a list, comma-separated, or a JSON array string, which is how MCP clients send it), `limit` and `offset`, and reports `total`. `reading-results.md` says to poll with the ids you started instead of reading the whole study.
+
 ## 1.13.0
 
 Running thematic analysis: eleven tools (134 in all). Everything the dashboard's Thematic page does is now a tool.
