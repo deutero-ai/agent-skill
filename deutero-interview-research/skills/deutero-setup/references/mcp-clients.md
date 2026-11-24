@@ -96,7 +96,7 @@ The key also works as `Authorization: Bearer <key>` — either header is fine.
 
 ## Tool inventory
 
-123 tools. Names are exact.
+134 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
 - **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
