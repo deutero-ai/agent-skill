@@ -55,8 +55,19 @@ NEW_VERSION="$(sed -n 's/^## \([0-9][0-9.]*\).*/\1/p' "$SRC/CHANGELOG.md" | head
 # skills.sh lists skills at their bare slugs; keeping one copy means tools that search the
 # whole repo don't find two skills with the same name. --delete keeps it a strict mirror of
 # the dashboard source. The dashboard README is not synced: the root README is this repo's own.
+# A folder without a SKILL.md (e.g. evals for a skill still being written) is not a skill yet:
+# publishing it would put an empty entry in every catalog that lists skills/.
+SKIP=()
+for d in "$SRC"/skills/*/; do
+  name="$(basename "$d")"
+  if [[ ! -f "$d/SKILL.md" ]]; then
+    echo "skipping skills/$name: no SKILL.md" >&2
+    SKIP+=(--exclude "/$name/")
+  fi
+done
 rsync -a --delete \
   --exclude .DS_Store \
+  ${SKIP[@]+"${SKIP[@]}"} \
   "$SRC/skills/" "$REPO/skills/"
 cp "$SRC/CHANGELOG.md" "$REPO/CHANGELOG.md"
 
