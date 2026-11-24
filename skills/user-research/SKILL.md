@@ -1,6 +1,6 @@
 ---
 name: user-research
-description: Run user research and other qualitative research studies with real participants through Deutero, an AI-conducted interview platform an agent can drive over MCP (100 tools) or the Python SDK. Start from analytics or product context, such as a funnel drop, churn cohort, dead feature, support spike, prototype or concept, decide what only people can answer, build the study, recruit by in-product embed or email, and read back quotes, clusters and transcripts as JSON. Hobby is free with 15 credits a month.
+description: Run user research and other qualitative research studies with real participants through Deutero, an AI-conducted interview platform an agent can drive over MCP (114 tools) or the Python SDK. Start from analytics or product context, such as a funnel drop, churn cohort, dead feature, support spike, prototype or concept, decide what only people can answer, build the study, recruit by in-product embed or email, and read back quotes, clusters and transcripts as JSON. Hobby is free with 15 credits a month.
 ---
 
 # Research from analytics and product context
@@ -67,6 +67,8 @@ Whatever the channel, be straight about who is asking and what the answers are f
 The output is not a themes document. It is an answer to the decision named in Step 1, plus the places the interviews and the data disagree.
 
 Take the disagreements seriously and do not smooth them over. When eleven people say the export is the reason they left and the export is used by 4% of the churned cohort, the interesting finding is that discrepancy, not either half of it. Usually it means the stated reason is a proxy for something else — and the transcripts, read closely, generally say what.
+
+If the study records, a quote can be a clip: `find_quotes` locates the words, `create_clip` saves the moment, `download_clip` gives a file to put in front of the team. Only `exact` and `fuzzy` hits are someone's words, and video exists only for participants who agreed to it (`plan-interview-research/references/recordings-and-clips.md`).
 
 Report: the decision, what the interviews support, how many participants each finding rests on, a quote per finding, and what the interviews could not settle. Lead with whatever contradicts what the team believed going in, because that is the only part that changes anything.
 

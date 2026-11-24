@@ -1,5 +1,50 @@
 # Changelog
 
+## 1.13.0
+
+Running thematic analysis: eleven tools (134 in all). Everything the dashboard's Thematic page does is now a tool.
+
+- `run_interview_analysis` analyses up to 50 interviews in the background (four phases each, a few minutes per interview); `list_interview_analyses` reports each interview's state (`not_analysed`, `queued`, `running` with `phases_completed`, `completed`, `failed`, and `stalled`). Already-analysed interviews are not charged again unless `rerun`; a failed one resumes where it stopped.
+- `get_study_analysis_options`, `run_study_analysis`, `get_study_analysis`, `list_study_analyses`, `retry_study_analysis`: the study report across the analysed interviews (at least 3), with the interview selection, segment and byline sources the dashboard offers.
+- `consolidate_codebook`, `update_code`, `merge_codes`: the codebook, by ref. `edit_study_report`: the report's headline, dek, decision or recommendation (numbers checked against the data).
+- Spending is confirmed: a run that costs credits is refused 409 `credit_confirmation_required` with `estimated_credits` and `available_credits` until resent with `acknowledge_credits`. A run the balance cannot cover is refused 402 and starts nothing; a tier off the plan is 403 `upgrade_required`. `plan-interview-research` adds a fourth "not yours to decide" rule: spending credits on analysis.
+- `reading-results.md` gains "Running the analysis"; the `deutero-setup` inventory lists the tools. The 404s of `get_interview_themes` / `get_study_themes` now name the tool that starts an analysis.
+
+## 1.12.0
+
+Thematic analysis results: seven tools (123 in all). Running an analysis stays on the dashboard's Thematic page.
+
+- `get_study_themes` returns the latest completed study analysis's whole report: findings, study themes with how many interviews raised each and out of what base, closed-question tallies, participants' phrases, segments, the real/simulated split, method and limits. Every number is computed from the data. `newer_run_status` says when a newer analysis is running or failed.
+- `get_interview_themes` returns one interview's codes, themes and quotes; `get_study_codebook` the codebook every interview is coded against (definitions, usage, exemplars, saturation, recent changes).
+- Quotes carry `cite`, `byline`, `verified`, `external_participant_id`, and `interview_id` + `message_id` for `get_transcript`. Interview Flow studies report your authored step ids.
+- `create_report_share`, `refresh_report_share`, `revoke_report_share`, `get_report_share_links`: share the study report as a `/r/<token>` link (anyone, or invited emails who confirm a code). A report that mixes real and simulated interviews, or quotes real participants, is refused 409 with the facts until the user agrees and you resend with `acknowledge_simulated_mix` / `acknowledge_real_quotes`.
+- `reading-results.md` says when to read the report rather than the transcripts, how to cite a quote, and never to present simulated respondents' quotes as evidence about real people. The `deutero-setup` inventory lists the tools.
+
+## 1.11.2
+
+From agent feedback. No new tools.
+
+- `upload_question_image`, `upload_flow_image` and `upload_welcome_hero` take `image_url` as well as `image_base64`: a public `https://` URL the server downloads once and stores as its own copy. Prefer it whenever the file is hosted, since base64 has to be written out in full in the tool call. Send exactly one of the two. Private or internal addresses, ports other than 443 and more than three redirects are refused with a 400 that says why. `question-types.md`, `branding.md` and `python-sdk.md` say the same.
+- Webhooks: an endpoint must resolve to a public address (internal ones are refused, with the reason in the delivery log), and a redirect is no longer followed: a 3xx is logged as a failed delivery. `recruit-participants/references/webhook-events.md` says the same.
+- `draft_study_from_site` refuses a URL on a private or internal address, and says why.
+- Simulations: slots questions (e.g. points to allocate across named items) no longer end the simulated interview with `interview_error`. A ranking answer with a lead-in ("My ranking: 5, 3, 4, 2, 1") is read instead of recorded as declined, and a single-select question's numbered options now appear in the simulated transcript.
+
+## 1.11.1
+
+Two bulk tools (116 in all), from agent feedback. `create_questions` adds up to 50 questions in one atomic call; `create_screening_questions` adds up to 20 screening questions the same way. Prefer them to a run of single creates when building a study.
+
+- `validate_questions` and the publish-time `validate_study` now validate long sets in slices server-side. A 20-question study no longer fails with a 502 "ran out of output tokens".
+- The screening 400 for `acceptable_options` names the failing values and the nearest real option, and says matching is exact. `question-types.md` and `recruitment-and-embedding.md` say the same.
+- `mcp-clients.md` tool inventory lists the new tools.
+
+## 1.11.0
+
+Recordings, quotes and clips: fourteen tools, now covered (114 tools in all). `get_interview_recording`, `find_quotes`, `create_clip`, `create_clip_from_quote`, `list_clips`, `get_clip`, `update_clip`, `delete_clip`, `download_clip`, `download_interview_recording`, `get_download`, `export_media`, `get_media_export`, `list_media_exports`; and `get_transcript` takes `include_timings`.
+
+- New `plan-interview-research/references/recordings-and-clips.md`: the recording policy (`audio_recording` / `video_recording`: off, optional, required) and its rules, consent (audio only means no video anywhere), recording sessions, the three clip locators, every clip error code and what to do, downloads and exports, and what is not an agent's to do (erasure).
+- `find_quotes` hits carry `match`: only `exact` and `fuzzy` are someone's words. A `semantic` hit is similar meaning and is never to be presented as a quote, or turned into a clip, unchecked.
+- `reading-results.md`, `study-fields.md`, `user-research` and the `deutero-setup` tool inventory point at it. No existing tool changed.
+
 ## 1.10.0
 
 Skills renamed for discovery on skills.sh: traffic skills take the bare job name, only platform mechanics keep the `deutero-` prefix. No tool, parameter or behaviour changes.

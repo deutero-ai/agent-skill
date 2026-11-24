@@ -14,6 +14,7 @@ That single fact should change how you write. You are not authoring a form to be
 1. **The model tier is the user's choice, every time.** Ask before creating the study and wait for an answer — never default, never create on a guess and offer to change it. The tiers cost 1, 3 and 10 credits per five questions, so this is a real spending decision. Recommend one, but let the user pick it. Offer only the tiers in `get_credit_balance`'s `plan.model_tiers`, which means checking the plan first. On Hobby that list is just `open_weights`, so there is nothing to ask: say which tier the study runs on and move on.
 2. **The dashboard link goes to the user the moment the study exists.** `create_study` returns `dashboard_url`; put it in your next message, in full. Same for a study you created earlier in the session and are still working on — re-share the link rather than making them hunt for it.
 3. **Opening and closing the study to participants is the user's call.** Don't publish a study the user hasn't agreed to open, and don't pause a live one without saying that pausing turns new participants away. The two things `publish_study` asks to be acknowledged, methodological validation issues and a credit shortfall, are theirs to accept, not yours.
+4. **Spending credits on analysis is the user's call.** `run_interview_analysis`, `run_study_analysis` and `retry_study_analysis` are refused 409 `credit_confirmation_required` with `estimated_credits` and `available_credits` until resent with `acknowledge_credits`. Tell the user the figure and wait for a yes; never set `acknowledge_credits` on your own, and never raise it to get past a new estimate without asking again.
 
 ## Know the plan before you design the study
 
@@ -138,7 +139,7 @@ For structured questions, `get_scale_responses` and `get_options_responses` summ
 
 `find_interviews_by_external_id` looks one person up by your own ID for them, when the links were tagged.
 
-`references/reading-results.md` has the analysis workflow and what to do with it.
+`references/reading-results.md` has the analysis workflow and what to do with it. When the study records, `references/recordings-and-clips.md` covers finding a quote, saving it as a clip and downloading audio or video.
 
 ## A caution worth keeping
 
@@ -156,3 +157,4 @@ Everything above is the same over the `deutero` Python SDK — one method per to
 - `references/publishing.md` — publishing, pausing, refusal codes and acknowledgements, the edit lock, full studies
 - `references/branding.md` — brand theme (colours, fonts, weights, corners), custom CSS, start-screen copy and hero image
 - `references/reading-results.md` — transcripts, search, clustering, what to report
+- `references/recordings-and-clips.md` — recording policy and consent, finding quotes, clips, audio/video downloads and exports

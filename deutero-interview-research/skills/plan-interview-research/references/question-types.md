@@ -1,6 +1,6 @@
 # Question types
 
-`create_question` appends to the study's list; `generate_questions` appends a generated set (see `generate_questions` below). `reorder_questions` takes every question id in the desired order; `update_question` does partial updates; `delete_question` renumbers the rest and removes recorded answers to it.
+`create_question` appends to the study's list; **`create_questions` appends up to 50 in one atomic call** (`{"study_id": "…", "questions": [{…}, {…}]}`, each item the same body as `create_question`, created in the order given, nothing saved if any item is invalid) — use it whenever you are building a set rather than adding one; `generate_questions` appends a generated set (see `generate_questions` below). `reorder_questions` takes every question id in the desired order; `update_question` does partial updates; `delete_question` renumbers the rest and removes recorded answers to it.
 
 The type is inferred from which config fields you send (`scale` → scale, `options` → choices, `slots` → slots, `expected_image` → image_upload, otherwise text), but **pass `qtype` explicitly** so intent is on the record and a later edit cannot silently change the type.
 
@@ -91,7 +91,7 @@ Asks the participant for a picture. `expected_image` describes what you want. **
 
 ## present_images
 
-Shows the participant images you supply (concepts, logos, packaging, screenshots) and asks about them. Create the question first, then attach each image with `upload_question_image` — one call per image, the file base64-encoded in `image_base64` (bare, or a `data:image/png;base64,…` URL; JPEG, PNG or WebP up to 10 MB). Give each a `label`: it is the caption participants and the interviewer use to refer to it. Images go after the existing ones unless you pass `position`; `delete_question_image` removes one (ids are under `images` on the question). Keep it to one to four images. Like `image_upload`, it **needs a paid plan**: on Hobby it is rejected with 403. In a simulation the persona sees the images.
+Shows the participant images you supply (concepts, logos, packaging, screenshots) and asks about them. Create the question first, then attach each image with `upload_question_image` — one call per image. If the file is hosted anywhere public (a CDN, a bucket, a raw GitHub link), send `image_url` (an `https://` URL; the server downloads it once and keeps its own copy) — one short string. Otherwise send the file base64-encoded in `image_base64` (bare, or a `data:image/png;base64,…` URL); base64 has to be written out in full in the tool call, so for anything over a few KB host it and use `image_url`. JPEG, PNG or WebP up to 10 MB either way. A URL on a private or internal address, a port other than 443, or more than three redirects is refused with the reason in the 400. Give each a `label`: it is the caption participants and the interviewer use to refer to it. Images go after the existing ones unless you pass `position`; `delete_question_image` removes one (ids are under `images` on the question). Keep it to one to four images. Like `image_upload`, it **needs a paid plan**: on Hobby it is rejected with 403. In a simulation the persona sees the images.
 
 ```json
 {"qtype": "present_images", "question": "Which of these logos feels most trustworthy, and why?"}
@@ -130,4 +130,4 @@ A 502 means the model's answer could not be used; nothing was saved, so call aga
 
 ## validate_questions
 
-Runs clarity, leading/biased wording and ethics checks over the set — the same review the dashboard's Validate button runs. Run it before recruiting. It catches the double-barrelled question and the question that tells the participant which answer you want, both of which are easy to write without noticing.
+Runs clarity, leading/biased wording and ethics checks over the set — the same review the dashboard's Validate button runs. Run it before recruiting. Long sets are validated server-side in slices of seven questions and merged, so a 20-question study works in one call (it takes proportionally longer only if the slices queue); a 502 now means the model failed, not that the study is too big. It catches the double-barrelled question and the question that tells the participant which answer you want, both of which are easy to write without noticing.

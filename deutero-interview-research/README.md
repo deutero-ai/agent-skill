@@ -35,7 +35,9 @@ MCP is for an agent in a session. Code that runs on its own — a webhook receiv
 
 ## Not covered over MCP
 
-Thematic analysis; Prolific recruitment; Slack and Discord connectors; billing; Chat with Data. All dashboard-only. The skills say so where it matters rather than sending you looking for a tool.
+Prolific recruitment; Slack and Discord connectors; billing; Chat with Data. All dashboard-only. The skills say so where it matters rather than sending you looking for a tool.
+
+Thematic analysis is covered end to end since 1.13.0: `run_interview_analysis` and `run_study_analysis` start it (after the user confirms the credits), `list_interview_analyses` / `get_study_analysis` follow it, `consolidate_codebook`, `update_code`, `merge_codes` and `edit_study_report` refine it, and the results tools of 1.12.0 (`get_study_themes`, `get_interview_themes`, `get_study_codebook`, the report share links) read and share it.
 
 Webhook endpoints *are* manageable over MCP (`create_webhook` and friends), and were not before 1.3.0 — the dashboard's Settings → Webhooks page and the API manage the same endpoints.
 

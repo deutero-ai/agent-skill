@@ -97,7 +97,7 @@ Everywhere else gets `message` with the Markdown taken out: the welcome turn in 
 
 Button labels change only what the button says. The interview still records consent as consent, so `"Count me in"` / `"Not today"` is safe.
 
-**Hero image:** `upload_welcome_hero` with `image_base64` (bare base64 or a `data:image/...;base64,` URL; JPEG, PNG or WebP up to 10 MB, stored downscaled to fit 1024×1024 as WebP) and `alt`. It replaces any previous hero. The welcome must exist first, or you get 400. `delete_welcome_hero` removes it. A large logo is just a hero image.
+**Hero image:** `upload_welcome_hero` with `image_url` (a public `https://` URL the server downloads once) or `image_base64` (bare base64 or a `data:image/...;base64,` URL) — prefer `image_url` when the file is hosted; JPEG, PNG or WebP up to 10 MB, stored downscaled to fit 1024×1024 as WebP — and `alt`. It replaces any previous hero. The welcome must exist first, or you get 400. `delete_welcome_hero` removes it. A large logo is just a hero image.
 
 **Translations:** `upsert_welcome_translation` takes `fields`, a map of translated copy keyed by the field names above (`{"title": "…", "consent_yes_label": "…"}`). A field left out shows untranslated, and omitting `fields` keeps what the translation already has.
 

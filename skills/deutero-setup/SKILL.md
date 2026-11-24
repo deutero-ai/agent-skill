@@ -72,7 +72,7 @@ Re-run `health_health_get` and `list_projects`, and report in one line: connecte
 
 These exist only in the dashboard, so plan around them rather than hunting for a tool:
 
-- Thematic analysis and its reports
+- Running thematic analysis (reading it, and sharing its report, are over MCP: `get_study_themes` and friends)
 - Prolific recruitment, Slack and Discord connectors
 - Billing, Chat with Data
 

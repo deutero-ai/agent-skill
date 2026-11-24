@@ -14,7 +14,7 @@ Contents:
 
 ## 1. Screening
 
-Screening questions are multiple choice, asked before the interview. `acceptable_options` lists **who qualifies** — anyone whose answer is not in that list is screened out. It must be a subset of `options`.
+Screening questions are multiple choice, asked before the interview. `acceptable_options` lists **who qualifies** — anyone whose answer is not in that list is screened out. It must be a subset of `options`, **copied exactly** — character for character, not a substring (`"Yes"` does not match the option `"Yes, at least sometimes"`). A 400 names the values it could not find and the closest real option.
 
 ```
 set_screening_settings    {"study_id": "…", "enabled": true,
@@ -24,6 +24,7 @@ create_screening_question {"study_id": "…",
                            "question": "Which service did you use most recently?",
                            "options": ["HelloFresh", "Blue Apron", "I have never used one"],
                            "acceptable_options": ["HelloFresh", "Blue Apron"]}
+create_screening_questions {"study_id": "…", "questions": [{question, options, acceptable_options}, …]}   # up to 20, atomic
 update_screening_question {"study_id": "…", "question_id": "…", "acceptable_options": ["HelloFresh"]}
 reorder_screening_questions {"study_id": "…", "question_ids": ["…", "…"]}
 get_screening             {"study_id": "…"}

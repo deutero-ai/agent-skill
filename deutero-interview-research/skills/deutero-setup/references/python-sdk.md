@@ -92,7 +92,7 @@ These are not 0.1's removed `studies.generate`. A study draft and a welcome draf
 | `publish_study` | `POST /studies/{study_id}/publish` (JSON body required, `{}` at minimum; optional `acknowledge_validation_run_id`, `acknowledge_credit_shortfall`) |
 | `pause_study` | `POST /studies/{study_id}/pause` |
 
-**Not in 0.2 yet: image uploads.** Images for `present_images` questions and flow steps, base64 in a JSON body (`{"image_base64": "…", "label": "…"}`):
+**Not in 0.2 yet: image uploads.** Images for `present_images` questions and flow steps, in a JSON body: a hosted file by URL (`{"image_url": "https://…", "label": "…"}`, fetched by the server) or the file base64-encoded (`{"image_base64": "…", "label": "…"}`), exactly one of the two:
 
 | MCP tool | REST |
 |---|---|
@@ -107,7 +107,7 @@ These are not 0.1's removed `studies.generate`. A study draft and a welcome draf
 | `get_theme` | `GET /theme` (optional `?study_id=`) |
 | `set_theme` | `PUT /theme` (`{"theme": {…}, "custom_css": "…", "study_id": "…"}`; fields left out are unchanged) |
 | `set_welcome` with start-screen copy | `PUT /studies/{study_id}/welcome` |
-| `upload_welcome_hero` / `delete_welcome_hero` | `POST` / `DELETE /studies/{study_id}/welcome/hero` (`{"image_base64": "…", "alt": "…"}`) |
+| `upload_welcome_hero` / `delete_welcome_hero` | `POST` / `DELETE /studies/{study_id}/welcome/hero` (`{"image_url": "https://…"}` or `{"image_base64": "…"}`, plus `"alt"`) |
 
 `plan-interview-research/references/branding.md` has the fields and refusals.
 

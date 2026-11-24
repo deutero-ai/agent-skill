@@ -58,6 +58,8 @@ delete_simulation {"simulation_id": "…"}
 
 **Ask the user which of the plan's `model_tiers` to run the simulation on before the first run**, every time — simulated interviews cost **2×** the live rate, so a panel of personas on `premium` adds up fast, and the tier is the user's call rather than yours. Quote the per-run estimate and the panel total at the tier they choose. A simulation does not have to run on the study's own tier: testing wording and flow coverage is usually fine on `open_weights`, while judging how well the interviewer *probes* needs the tier the real study will use. Say which of those the run is for, recommend accordingly, and wait for the answer.
 
+By default the tier model also writes the persona's answers. `participant_model: "persimmon"` hands that side to Persimmon (humans&), a user model that portrays the persona as a person rather than as an assistant playing one. The interviewer, and the price, stay on `model_tier`. Persimmon reads text only, so answers to a question that shows images still come from the tier model. A deployment without Persimmon returns 503 `participant_model_unavailable`. `get_simulation` reports which model wrote the persona's answers.
+
 `run_simulation` starts **one** run and returns immediately with an `estimated_credits` figure. To sweep a panel, call once per persona. Poll `get_simulation` until `status` leaves `running`; it ends `completed` or `failed`. A run still unsettled two hours after it started reports `failed` — its worker is gone and its reservation has expired.
 
 Pass `persona_id` for a stored persona, `persona` for ad-hoc text (which overrides the stored text if both are given), or neither for a generic participant.

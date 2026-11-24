@@ -6,7 +6,7 @@
 https://dashboard.deutero.ai/mcp
 ```
 
-`https://agents.deutero.ai/mcp` serves the same server. Use **https** — an `http://` URL will not connect. The path is exactly `/mcp` with nothing after it; a 404 on `/mcp/mcp` means a client appended its own path.
+Use `https://dashboard.deutero.ai/mcp`. The old alias `https://agents.deutero.ai/mcp` no longer resolves (NXDOMAIN, checked 2026-11-05) — do not put it in a client config. Use **https**: plain `http://` answers a 301 redirect to the `https://` URL and most MCP clients refuse cross-scheme redirects, so an `http://` URL connects but then hangs or errors without a clear message. The path is exactly `/mcp` with nothing after it; a 404 on `/mcp/mcp` means a client appended its own path.
 
 The same API is plain REST at `https://dashboard.deutero.ai/study-api/api/v1/`, documented at `/study-api/api/v1/docs`. Every MCP tool is exactly one REST route with the same parameters — the tool name is the route *function's* name, though, not its URL path (`find_interviews_by_external_id` is `GET /studies/{study_id}/interviews/by-external-id`), so read the paths off `/docs` rather than deriving them from tool names. This is the surface a **server** uses: MCP tools are available to an agent in a session, not to the user's own backend, so anything that has to run in a request handler or a nightly job goes through REST with an API key — in Python, through the `deutero` SDK (`python-sdk.md`), which wraps every route and names each method after its resource rather than the tool.
 
@@ -26,6 +26,8 @@ Preferred wherever the client supports remote MCP authorization. The user signs 
 ```
 
 The first tool call triggers the authorization prompt. It needs a browser and a human; an agent cannot complete it unattended. If the user is on a headless machine, use an API key instead.
+
+OAuth discovery (RFC 9728) is live: unauthenticated calls to the endpoint answer `401` with a `WWW-Authenticate: Bearer` header pointing at `https://dashboard.deutero.ai/.well-known/oauth-protected-resource/mcp`, which names `https://login.deutero.ai` as the authorization server and `openid`, `email`, `profile` as scopes. Compliant clients (Claude, Cursor, VS Code) resolve this themselves — that is what triggers the prompt; no manual URL is ever entered.
 
 ## API keys
 
@@ -94,21 +96,23 @@ The key also works as `Authorization: Bearer <key>` — either header is fine.
 
 ## Tool inventory
 
-100 tools. Names are exact.
+123 tools. Names are exact.
 
 - **Projects and studies** — `list_projects`, `create_project`, `get_project`, `update_project`, `create_study`, `list_studies`, `get_study`, `update_study`, `draft_study`, `draft_study_from_site`
 - **Publication** — `get_publication_status`, `validate_study`, `publish_study`, `pause_study`
 - **Welcome and consent** — `get_welcome`, `set_welcome`, `generate_welcome`, `list_welcome_translations`, `upsert_welcome_translation`, `delete_welcome_translation`, `upload_welcome_hero`, `delete_welcome_hero`
 - **Brand theme** — `get_theme`, `set_theme`
-- **Screening** — `get_screening`, `set_screening_settings`, `create_screening_question`, `update_screening_question`, `delete_screening_question`, `reorder_screening_questions`
+- **Screening** — `get_screening`, `set_screening_settings`, `create_screening_question`, `create_screening_questions`, `update_screening_question`, `delete_screening_question`, `reorder_screening_questions`
 - **Characteristics** — `get_characteristics`, `set_characteristics_settings`, `create_characteristic_question`, `update_characteristic_question`, `delete_characteristic_question`, `reorder_characteristic_questions`
-- **Questions** — `list_questions`, `create_question`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`, `upload_question_image`, `delete_question_image`
+- **Questions** — `list_questions`, `create_question`, `create_questions`, `update_question`, `delete_question`, `reorder_questions`, `generate_questions`, `validate_questions`, `upload_question_image`, `delete_question_image`
 - **Interview Flow** — `describe_graph_nodes`, `get_graph`, `check_graph`, `set_graph`, `patch_graph`, `import_questions_to_graph`, `activate_graph`, `deactivate_graph`, `get_flow_signals`, `upload_flow_image`
 - **Recruitment and embedding** — `get_recruitment`, `update_recruitment`, `list_embed_keys`, `create_embed_key`, `update_embed_key`, `get_embed_snippet`
 - **Sharing a study** — `get_study_share_links`, `create_study_share`, `refresh_study_share`, `revoke_study_share`
 - **Personas and simulation** — `list_personas`, `create_persona`, `update_persona`, `delete_persona`, `generate_personas`, `list_simulations`, `run_simulation`, `get_simulation`, `delete_simulation`
 - **Results** — `get_study_stats`, `list_interviews`, `find_interviews_by_external_id`, `get_interview`, `get_transcript`, `bulk_transcripts`, `search_transcripts`, `get_interview_fetches_and_signals`
+- **Recordings, quotes and clips** — `get_interview_recording`, `find_quotes`, `create_clip`, `create_clip_from_quote`, `list_clips`, `get_clip`, `update_clip`, `delete_clip`, `download_clip`, `download_interview_recording`, `get_download`, `export_media`, `get_media_export`, `list_media_exports` (links never bytes; video only with the participant's consent)
 - **Participant contacts** — `list_study_contacts`, `get_interview_contact` (personal data; every read is audited)
+- **Thematic analysis** — `list_interview_analyses`, `run_interview_analysis`, `get_study_analysis_options`, `run_study_analysis`, `list_study_analyses`, `get_study_analysis`, `retry_study_analysis` (runs are charged: confirm the credits with the user, `acknowledge_credits`), `get_study_themes`, `get_interview_themes`, `get_study_codebook`, `consolidate_codebook`, `update_code`, `merge_codes`, `edit_study_report`, `get_report_share_links`, `create_report_share`, `refresh_report_share`, `revoke_report_share`
 - **Analysis** — `list_analyzable_questions`, `get_scale_responses`, `get_options_responses`, `run_clustering`, `get_optimal_clusters`, `get_latest_clustering`
 - **Webhooks** — `list_webhook_event_types`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `rotate_webhook_secret`, `list_webhook_deliveries`
 - **Account** — `get_credit_balance` (the balance, and the `plan` block: tier, allowed model tiers, Interview Flow, image questions, simulations, open-study limit), `health_health_get`

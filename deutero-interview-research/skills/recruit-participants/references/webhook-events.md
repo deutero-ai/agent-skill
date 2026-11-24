@@ -142,6 +142,7 @@ Verifying is not deduplicating: `webhook-id` still has to be checked against wha
 
 ## 4. Delivery semantics
 
+- **A public URL, no redirects.** The endpoint must resolve to a public address: a private, loopback or other internal one is refused, and the delivery log says why. A 3xx response is logged as a failed delivery, not followed, so register the URL the endpoint redirects to. Any port, http or https.
 - **One attempt.** Failed deliveries are logged, not retried. Anything that must not be missed needs a reconciliation path (`find_interviews_by_external_id`, `list_interviews`).
 - **10-second timeout.** Return 2xx first. A local write fits comfortably inline; anything that calls a third party belongs off the request.
 - **Success is any status below 300.** A 302 to a login page counts as failure; an endpoint behind SSO will silently never work.

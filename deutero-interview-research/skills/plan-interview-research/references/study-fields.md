@@ -122,7 +122,7 @@ Set with `update_study` (or on the Details page):
 - **voice_enabled / video_enabled** — which modalities participants may use. Enabling them exposes extra participation URLs.
 - **voice_engine** — `local` (on-device, priced as chat, every plan) or `cloud` (server speech, +1 credit, Solo and up). Read only when voice is on.
 - **redirect_url** — where participants land after finishing. Essential with a paid panel.
-- **Session recording** — off by default.
+- **audio_recording / video_recording** — `off` (default), `optional` or `required`. Video needs audio, `required` video cannot sit on `optional` audio, and video cannot be combined with PII masking (422 `invalid_recording_policy`). Locked while the study is open. What is stored is the policy and the participant's consent. Reading, clipping and downloading recordings: `recordings-and-clips.md`.
 
 > **Known issue (September 2026).** Session recording does not work in production: every upload fails and participants are told recording has stopped. Transcripts are unaffected. Leave the toggles off, and do not promise participants a recording in consent text.
 
